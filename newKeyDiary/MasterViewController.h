@@ -1,13 +1,13 @@
 //
-//  ViewController.h
+//  MasterViewController.h
 //  newKeyDiary
 //
 //  Created by Black Black on 3/16/13.
 //  Copyright (c) 2013 BlackXBlack. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "JASidePanelController.h"
 
-@interface ViewController : UIViewController
+@interface MasterViewController : JASidePanelController
 
 @end
