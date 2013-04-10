@@ -8,11 +8,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "newKeyDiary/DiaryViewController.m"
-         timestampString = "386233410.367505"
+         timestampString = "387208315.381378"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "1279"
-         endingLineNumber = "1279"
+         startingLineNumber = "1280"
+         endingLineNumber = "1280"
          landmarkName = "@implementation DiaryViewController"
          landmarkType = "3">
       </FileBreakpoint>
@@ -21,33 +21,33 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "newKeyDiary/DiaryViewController.m"
-         timestampString = "386233410.367505"
+         timestampString = "387208315.381378"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "1724"
-         endingLineNumber = "1724">
+         startingLineNumber = "1725"
+         endingLineNumber = "1725">
       </FileBreakpoint>
       <FileBreakpoint
          shouldBeEnabled = "No"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "newKeyDiary/DiaryViewController.m"
-         timestampString = "386233410.367505"
+         timestampString = "387208315.381378"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "1357"
-         endingLineNumber = "1357">
+         startingLineNumber = "1358"
+         endingLineNumber = "1358">
       </FileBreakpoint>
       <FileBreakpoint
          shouldBeEnabled = "No"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "newKeyDiary/DiaryViewController.m"
-         timestampString = "386233410.367505"
+         timestampString = "387208315.381378"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "1480"
-         endingLineNumber = "1480">
+         startingLineNumber = "1481"
+         endingLineNumber = "1481">
       </FileBreakpoint>
       <FileBreakpoint
          shouldBeEnabled = "No"
@@ -67,11 +67,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "newKeyDiary/DiaryViewController.m"
-         timestampString = "386233410.367505"
+         timestampString = "387208315.381378"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "195"
-         endingLineNumber = "195"
+         startingLineNumber = "196"
+         endingLineNumber = "196"
          landmarkName = "-initEditForm"
          landmarkType = "5">
       </FileBreakpoint>
@@ -106,11 +106,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "newKeyDiary/DiaryViewController.m"
-         timestampString = "386233410.367505"
+         timestampString = "387208315.381378"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "896"
-         endingLineNumber = "896"
+         startingLineNumber = "897"
+         endingLineNumber = "897"
          landmarkName = "-controllerDidChangeContent:"
          landmarkType = "5">
       </FileBreakpoint>
@@ -119,11 +119,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "newKeyDiary/DiaryViewController.m"
-         timestampString = "386233410.367505"
+         timestampString = "387208315.381378"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "742"
-         endingLineNumber = "742"
+         startingLineNumber = "743"
+         endingLineNumber = "743"
          landmarkName = "-fetchedResultsController"
          landmarkType = "5">
       </FileBreakpoint>
@@ -132,11 +132,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "newKeyDiary/DiaryViewController.m"
-         timestampString = "386233410.367505"
+         timestampString = "387208315.381378"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "458"
-         endingLineNumber = "458"
+         startingLineNumber = "459"
+         endingLineNumber = "459"
          landmarkName = "-setRemindTime:"
          landmarkType = "5">
       </FileBreakpoint>

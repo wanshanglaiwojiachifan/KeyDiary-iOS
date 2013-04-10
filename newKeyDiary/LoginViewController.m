@@ -69,7 +69,7 @@
     }
 }
 - (IBAction)register:(id)sender {
-    NSURL *registerUrl = [NSURL URLWithString:@"http://www.keydiary.net/app/accounts/register?type=app"];
+    NSURL *registerUrl = [NSURL URLWithString:@"http://api.keydiary.net/app/accounts/register?redirectUrl=keydiary://login"];
     [[UIApplication sharedApplication] openURL:registerUrl];
 }
 

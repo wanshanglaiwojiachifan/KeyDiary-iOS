@@ -99,8 +99,8 @@
 /* APP启动时，检查用户信息 */
 - (void)checkUserWhenStart{
     NSString *username = [self.userLogin getUsername];
-    //NSLog(@"checkUserWhenStart list %@", [username class]);
-    if (!username || [username isEqualToString:@""]) {
+    NSLog(@"checkUserWhenStart list %@", username);
+    if (!username || [username isEqualToString:@""] || [username isEqualToString:@"(null)"]) {
         _username = @"";
         _password = @"";
         [self showLoginForm:nil];
@@ -110,7 +110,7 @@
         NSLog(@"getUserInfo Array %@", info);
         if (info != nil && [info count] >= 3) {
             NSDate *lastLogin = [self strToDateByFormat:[info objectAtIndex:2] format:@"yyyy-MM-dd HH:mm:ss"];
-            if ([info count] >= 4 && [info objectAtIndex:3] != nil) {
+            if ([info count] >= 4 && [info objectAtIndex:3] != nil && ![[info objectAtIndex:3] isEqual: @"(null)"]) {
                 _remindTime = (NSString *)[info objectAtIndex:3];
             } else {
                 _remindTime = @"NO";
@@ -121,7 +121,8 @@
                 _userStartDate = [self strToDateByFormat:[info objectAtIndex:1] format:@"yyyy-MM-dd HH:mm:ss"];
                 NSLog(@"initUserView by cor data");
                 [self initUserView:username password:password created:[info objectAtIndex:0]];
-                return;
+            } else {
+                [self checkUserLogin:username password:password];
             }
         } else {
             _remindTime = @"NO";

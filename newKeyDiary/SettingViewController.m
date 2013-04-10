@@ -80,9 +80,14 @@
 }
 - (void)setRemindTime:(NSString *)remindTime
 {
+    
     [self.sidePanelController.centerPanel setRemindTime:remindTime];
     [self setRemindButtonTitle:remindTime];
     [self hideRemindForm];
+}
+- (void)setRemindNotification:(NSString *)remindTime
+{
+    
 }
 - (void)didReceiveMemoryWarning
 {
