@@ -1,0 +1,29 @@
+/* 
+  Localizable.strings
+  newKeyDiary
+
+  Created by Black Black on 3/24/13.
+  Copyright (c) 2013 BlackXBlack. All rights reserved.
+*/
+"Login..." = "登陆中...";
+"Upload Success" = "上传成功";
+"Upload Fail" = "上传失败";
+"Delete Success" = "删除成功";
+"Delete Fail" = "删除失败";
+"Loading Diary..." = "加载日记...";
+"Merge Diary..." = "合并日记...";
+"Error When Getting Diaries" = "获取日记失败";
+"Upload Diary..." = "同步日记中...";
+"Deleting Diary..." = "删除日记中...";
+"Network Failed" = "网络状态不佳";
+"Password Not Compatible" = "密码不匹配";
+"Save Data Error" = "保存日记失败";
+"Save Again" = "重新保存";
+"Drop" = "丢弃";
+"Save" = "保存";
+"Delete" = "删除";
+"Droping Diary..." = "丢弃日记...";
+"Saving Remind Time..." = "保存提醒设置...";
+"Remind : Closed" = "提醒 : 未打开";
+"Remind : " = "提醒 : ";
+"Logout : " = "注销 : ";

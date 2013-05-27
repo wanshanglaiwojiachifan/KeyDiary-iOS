@@ -1,0 +1,29 @@
+/* 
+  Localizable.strings
+  newKeyDiary
+
+  Created by Black Black on 3/24/13.
+  Copyright (c) 2013 BlackXBlack. All rights reserved.
+*/
+"Login..." = "Login...";
+"Upload Success" = "Upload Success";
+"Upload Fail" = "Upload Fail";
+"Delete Success" = "Delete Success";
+"Delete Fail" = "Delete Fail";
+"Loading Diary..." = "Loading Diary...";
+"Merge Diary..." = "Merge Diary...";
+"Error When Getting Diaries" = "Error When Getting Diaries";
+"Upload Diary..." = "Upload Diary...";
+"Deleting Diary..." = "Deleting Diary...";
+"Network Failed" = "Network Failed";
+"Password Not Compatible" = "Password Not Compatible";
+"Save Data Error" = "Save Data Error";
+"Save Again" = "Save Again";
+"Drop" = "Drop";
+"Save" = "Save";
+"Delete" = "Delete";
+"Droping Diary..." = "Droping Diary...";
+"Saving Remind Time..." = "Saving Remind Time...";
+"Remind : Closed" = "Remind : Closed";
+"Remind : " = "Remind : ";
+"Logout : " = "Logout : ";
