@@ -27,3 +27,14 @@
 "Remind : Closed" = "Remind : Closed";
 "Remind : " = "Remind : ";
 "Logout : " = "Logout : ";
+"Sun" = "SUN";
+"Mon" = "MON";
+"Tue" = "TUE";
+"Wed" = "WED";
+"Thu" = "THU";
+"Fri" = "FRI";
+"Sat" = "SAT";
+"Are you sure to delete?" = "Are you sure to delete?";
+"sure" = "sure";
+"cancel" = "cancel";
+"No Account" = "No Account";

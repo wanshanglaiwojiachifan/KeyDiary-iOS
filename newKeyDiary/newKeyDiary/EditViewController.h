@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "SingleDay.h"
+#import "DateExtend.h"
 @class EditViewController;
 @protocol EditViewControllerDelegate <NSObject>
 
@@ -16,10 +17,13 @@
 ;
 - (void) deleteDiary:(NSString *)dateStr sectionIndex:(NSInteger)section rowIndex:(NSInteger)row;
 - (void) dropDiary:(NSString *)dateStr sectionIndex:(NSInteger)section rowIndex:(NSInteger)row;
+- (void) editFormMoveToCenter;
+- (void) editFormMoveToTop;
+- (UIView *)getSelfView;
 
 @end
 
-@interface EditViewController : UIViewController<UITextFieldDelegate>
+@interface EditViewController : UIViewController<UITextFieldDelegate, UIActionSheetDelegate>
 @property (strong, nonatomic) IBOutlet UIButton *saveButton;
 @property (strong, nonatomic) IBOutlet UITextField *KeywordField;
 @property (strong, nonatomic) IBOutlet UIButton *deleteButton;
@@ -28,6 +32,6 @@
 @property (nonatomic, assign) NSInteger rowIndex;
 @property (nonatomic, assign) NSInteger sectionIndex;
 
-- (void)setFormInfo:(NSString *)date keyword:(NSString *)keyword sectionIndex:(NSInteger)section rowIndex:(NSInteger)row sync:(BOOL)sync;
+- (void)setFormInfo:(DateExtend *)date keyword:(NSString *)keyword sectionIndex:(NSInteger)section rowIndex:(NSInteger)row sync:(BOOL)sync;
 
 @end

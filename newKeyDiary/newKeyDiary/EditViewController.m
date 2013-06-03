@@ -10,6 +10,7 @@
 #import "SingleDay.h"
 #import "DiaryViewController.h"
 #import <QuartzCore/QuartzCore.h>
+#import "DateExtend.h"
 
 @interface EditViewController ()
 
@@ -28,6 +29,7 @@
     NSString *keywordBefore;
     BOOL forSync;
     UIColor *_themeColor;
+    DateExtend *_current;
 }
 
 @synthesize delegate;
@@ -60,6 +62,7 @@
     self.DateField.text = currentDateStr;
     
     _themeColor = [UIColor colorWithRed:69/255.0 green:212/255.0 blue:218/255.0 alpha:1.0];
+
     [self.saveButton setBackgroundColor:_themeColor];
     [self.saveButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     self.saveButton.layer.cornerRadius = 5.0f;
@@ -87,17 +90,16 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)setFormInfo:(NSString *)date keyword:(NSString *)keyword sectionIndex:(NSInteger)section rowIndex:(NSInteger)row sync:(BOOL)sync
+- (void)setFormInfo:(DateExtend *)date keyword:(NSString *)keyword sectionIndex:(NSInteger)section rowIndex:(NSInteger)row sync:(BOOL)sync
 {
-    NSLog(@"setFormInfo section - %d, row - %d", section, row);
+    NSLog(@"setFormInfo section - %d, row - %d", section, [date weekday]);
     //[self.KeywordField becomeFirstResponder];
-
+    _current = date;
     keywordBefore = keyword;
-    self.DateField.text = date;
+    self.DateField.text =  [NSString stringWithFormat:@"%@ %@", [_current toString:@"yyyy-MM-dd"], [self getWeekdayChinese:[_current weekday]]];
     self.KeywordField.text = keyword;
     self.sectionIndex = section;
     self.rowIndex = row;
-    currentDateStr = date;
     forSync = sync;
     
     if (sync) {
@@ -109,10 +111,6 @@
     }
 }
 
-/*- (IBAction)backToDiary:(id)sender {
-    NSLog(@"edit view controller backToDiary");
-    [self.delegate hideEditForm:sender];
-}*/
 
 - (IBAction)saveDiary:(id)sender {
     [self.KeywordField resignFirstResponder];
@@ -125,9 +123,42 @@
 {
     if (textField == self.DateField) {
         return NO;
+    } else if (textField == self.KeywordField) {
+        [self.delegate editFormMoveToTop];
     }
-
+    NSLog(@"textFieldShouldBeginEditing");
     return YES;
+}
+
+- (NSString *)getWeekdayChinese:(NSInteger)weekday{
+    NSString *str;
+    switch (weekday) {
+        case 1:
+            str = NSLocalizedString(@"Sun", nil);
+            break;
+        case 2:
+            str = NSLocalizedString(@"Mon", nil);
+            break;
+        case 3:
+            str = NSLocalizedString(@"Tue", nil);
+            break;
+        case 4:
+            str = NSLocalizedString(@"Wed", nil);
+            break;
+        case 5:
+            str = NSLocalizedString(@"Thu", nil);
+            break;
+        case 6:
+            str = NSLocalizedString(@"Fri", nil);
+            break;
+        case 7:
+            str = NSLocalizedString(@"Sat", nil);
+            break;
+        default:
+            str = @"";
+            break;
+    }
+    return str;
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
@@ -137,7 +168,7 @@
     NSLog(@"shouldChangeCharactersInRange %d %@", [self getKeywordCount:newStringClean], newStringClean);
     //区分中文7个字和英文14个字 todo
     if ([self getKeywordCount:newStringClean] > 14) {
-        self.KeywordField.backgroundColor = [UIColor redColor];
+        self.KeywordField.backgroundColor = [UIColor colorWithRed:255.0f/255.0f green:170.0f/255.0f blue:170.0f/255.0f alpha:1.0f];
     } else {
         self.KeywordField.backgroundColor = [UIColor whiteColor];
     }
@@ -146,7 +177,10 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField *)theTextField {
     if (theTextField == self.KeywordField) {
+        NSLog(@"textFieldShouldReturn");
+
         [theTextField resignFirstResponder];
+        [self.delegate editFormMoveToCenter];
     }
     //[self doSave];
     return YES;
@@ -159,6 +193,7 @@
     if ([self.KeywordField isFirstResponder] && [touch view] != self
         .KeywordField) {
         [self.KeywordField resignFirstResponder];
+        [self.delegate editFormMoveToCenter];
     }
     [super touchesBegan:touches withEvent:event];
 }
@@ -183,7 +218,7 @@
 }
 
 - (NSInteger)getKeywordCount:(NSString *)keyword
-{    
+{
      NSStringEncoding enc = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGB_18030_2000);
     NSUInteger bytes = [keyword lengthOfBytesUsingEncoding:enc];
     return bytes;
@@ -192,15 +227,28 @@
 
 
 - (IBAction)deleteButton:(id)sender {
-    if (forSync) {
-        [self.delegate dropDiary:currentDateStr sectionIndex:self.sectionIndex rowIndex:self.rowIndex];
-    } else {
-        [self.delegate deleteDiary:currentDateStr sectionIndex:self.sectionIndex rowIndex:self.rowIndex];
-    }
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:NSLocalizedString(@"Are you sure to delete?", nil) delegate:self cancelButtonTitle:NSLocalizedString(@"cancel", nil) destructiveButtonTitle:NSLocalizedString(@"sure", nil) otherButtonTitles: nil];
+    [sheet showInView:[self.delegate getSelfView]];
 }
 - (void)viewDidUnload {
     [self setSaveButton:nil];
     [self setDeleteButton:nil];
     [super viewDidUnload];
 }
+
+/* action delegate */
+- (void) actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    NSLog(@"didDismissWithButtonIndex %@ %d", [actionSheet buttonTitleAtIndex:buttonIndex], buttonIndex);
+    if (buttonIndex == 0) {
+        if (forSync) {
+            [self.delegate dropDiary:currentDateStr sectionIndex:self.sectionIndex rowIndex:self.rowIndex];
+        } else {
+            [self.delegate deleteDiary:currentDateStr sectionIndex:self.sectionIndex rowIndex:self.rowIndex];
+        }
+    }
+}
+- (IBAction)closeClick:(id)sender {
+    [self.delegate hideEditForm:nil];
+}
+
 @end

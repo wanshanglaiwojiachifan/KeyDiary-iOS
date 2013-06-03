@@ -27,3 +27,14 @@
 "Remind : Closed" = "提醒 : 未打开";
 "Remind : " = "提醒 : ";
 "Logout : " = "注销 : ";
+"Sun" = "周日";
+"Mon" = "周一";
+"Tue" = "周二";
+"Wed" = "周三";
+"Thu" = "周四";
+"Fri" = "周五";
+"Sat" = "周六";
+"Are you sure to delete?" = "真的要删除日记么?";
+"sure" = "确定一定以及肯定";
+"cancel" = "取消";
+"No Account" = "未登录";

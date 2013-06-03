@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		422A8B6016FB23AB00DFAD66 /* GCDiscreetNotificationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 422A8B5F16FB23AB00DFAD66 /* GCDiscreetNotificationView.m */; };
 		4282966416FF096500DAF832 /* DiaryRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 4282966316FF096500DAF832 /* DiaryRequest.m */; };
+		429A813517587CFE00E10C4E /* DateExtend.m in Sources */ = {isa = PBXBuildFile; fileRef = 429A813417587CFE00E10C4E /* DateExtend.m */; };
 		429E868416F4AE210025A4F3 /* settings.png in Resources */ = {isa = PBXBuildFile; fileRef = 429E868316F4AE210025A4F3 /* settings.png */; };
 		429E868916F4B1560025A4F3 /* calendar.png in Resources */ = {isa = PBXBuildFile; fileRef = 429E868716F4B1560025A4F3 /* calendar.png */; };
 		429E868A16F4B1560025A4F3 /* attibutes.png in Resources */ = {isa = PBXBuildFile; fileRef = 429E868816F4B1560025A4F3 /* attibutes.png */; };
@@ -17,6 +18,7 @@
 		429E869216F4BE0C0025A4F3 /* SingleDay.m in Sources */ = {isa = PBXBuildFile; fileRef = 429E869016F4BE0C0025A4F3 /* SingleDay.m */; };
 		429E869416F4C2FF0025A4F3 /* pencil.png in Resources */ = {isa = PBXBuildFile; fileRef = 429E869316F4C2FF0025A4F3 /* pencil.png */; };
 		429E869716F4C6D50025A4F3 /* EditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 429E869616F4C6D50025A4F3 /* EditViewController.m */; };
+		429FCC21175AEDDB00BA62E8 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 429FCC1F175AEDDB00BA62E8 /* MBProgressHUD.m */; };
 		42A23B0816F9ACD2001AD918 /* SBAPIManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 42A23B0716F9ACD2001AD918 /* SBAPIManager.m */; };
 		42A23B0B16F9C37B001AD918 /* DiaryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 42A23B0A16F9C37A001AD918 /* DiaryViewController.m */; };
 		42A2DCF61753A630001D7CE7 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 42A2DCF51753A630001D7CE7 /* Icon.png */; };
@@ -47,13 +49,16 @@
 		42A46EDB16F93A2D002120B4 /* AFXMLRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 42A46ED116F93A2D002120B4 /* AFXMLRequestOperation.m */; };
 		42A46EDC16F93A2D002120B4 /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 42A46ED316F93A2D002120B4 /* UIImageView+AFNetworking.m */; };
 		42A46EDF16F93B4C002120B4 /* UserLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = 42A46EDE16F93B4C002120B4 /* UserLogin.m */; };
-		42A46EE216F93C7C002120B4 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 42A46EE116F93C7C002120B4 /* MBProgressHUD.m */; };
 		42A4900716F5E64E006AD290 /* sign-in.png in Resources */ = {isa = PBXBuildFile; fileRef = 42A4900516F5E64E006AD290 /* sign-in.png */; };
 		42A4900816F5E64E006AD290 /* sign-out.png in Resources */ = {isa = PBXBuildFile; fileRef = 42A4900616F5E64E006AD290 /* sign-out.png */; };
 		42A56D9716FAA337004DA9E1 /* SSKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 42A56D9616FAA337004DA9E1 /* SSKeychain.m */; };
 		42A56D9916FAA34E004DA9E1 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42A56D9816FAA34E004DA9E1 /* Security.framework */; };
 		42A5AC1416FB7AF3005D3D20 /* DiaryViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 42A5AC1316FB7AF2005D3D20 /* DiaryViewCell.m */; };
 		42A72CAC1702D868000B9133 /* RemindViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 42A72CAB1702D868000B9133 /* RemindViewController.m */; };
+		42A97D131759D7ED00A33294 /* close.png in Resources */ = {isa = PBXBuildFile; fileRef = 42A97D111759D7EC00A33294 /* close.png */; };
+		42A97D141759D7ED00A33294 /* close@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 42A97D121759D7EC00A33294 /* close@2x.png */; };
+		42A97D17175A2A9900A33294 /* field.png in Resources */ = {isa = PBXBuildFile; fileRef = 42A97D15175A2A9900A33294 /* field.png */; };
+		42A97D1A175A2DDE00A33294 /* field@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 42A97D19175A2DDE00A33294 /* field@2x.png */; };
 		42B7573116F447A500321736 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42B7573016F447A500321736 /* UIKit.framework */; };
 		42B7573316F447A500321736 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42B7573216F447A500321736 /* Foundation.framework */; };
 		42B7573516F447A500321736 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42B7573416F447A500321736 /* CoreGraphics.framework */; };
@@ -78,6 +83,8 @@
 		422A8B5F16FB23AB00DFAD66 /* GCDiscreetNotificationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCDiscreetNotificationView.m; sourceTree = "<group>"; };
 		4282966216FF096500DAF832 /* DiaryRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiaryRequest.h; sourceTree = "<group>"; };
 		4282966316FF096500DAF832 /* DiaryRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiaryRequest.m; sourceTree = "<group>"; };
+		429A813317587CFE00E10C4E /* DateExtend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DateExtend.h; path = ../DateExtend.h; sourceTree = "<group>"; };
+		429A813417587CFE00E10C4E /* DateExtend.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DateExtend.m; path = ../DateExtend.m; sourceTree = "<group>"; };
 		429E868316F4AE210025A4F3 /* settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = settings.png; sourceTree = "<group>"; };
 		429E868716F4B1560025A4F3 /* calendar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = calendar.png; sourceTree = "<group>"; };
 		429E868816F4B1560025A4F3 /* attibutes.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = attibutes.png; sourceTree = "<group>"; };
@@ -88,6 +95,8 @@
 		429E869316F4C2FF0025A4F3 /* pencil.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pencil.png; sourceTree = "<group>"; };
 		429E869516F4C6D50025A4F3 /* EditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditViewController.h; sourceTree = "<group>"; };
 		429E869616F4C6D50025A4F3 /* EditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditViewController.m; sourceTree = "<group>"; };
+		429FCC1F175AEDDB00BA62E8 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
+		429FCC20175AEDDB00BA62E8 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
 		42A23B0616F9ACD2001AD918 /* SBAPIManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBAPIManager.h; sourceTree = "<group>"; };
 		42A23B0716F9ACD2001AD918 /* SBAPIManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBAPIManager.m; sourceTree = "<group>"; };
 		42A23B0916F9C37A001AD918 /* DiaryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiaryViewController.h; sourceTree = "<group>"; };
@@ -138,8 +147,6 @@
 		42A46ED316F93A2D002120B4 /* UIImageView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+AFNetworking.m"; sourceTree = "<group>"; };
 		42A46EDD16F93B4C002120B4 /* UserLogin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserLogin.h; sourceTree = "<group>"; };
 		42A46EDE16F93B4C002120B4 /* UserLogin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserLogin.m; sourceTree = "<group>"; };
-		42A46EE016F93C7C002120B4 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
-		42A46EE116F93C7C002120B4 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		42A4900516F5E64E006AD290 /* sign-in.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sign-in.png"; sourceTree = "<group>"; };
 		42A4900616F5E64E006AD290 /* sign-out.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sign-out.png"; sourceTree = "<group>"; };
 		42A56D9516FAA337004DA9E1 /* SSKeychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKeychain.h; sourceTree = "<group>"; };
@@ -149,6 +156,10 @@
 		42A5AC1316FB7AF2005D3D20 /* DiaryViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiaryViewCell.m; sourceTree = "<group>"; };
 		42A72CAA1702D868000B9133 /* RemindViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RemindViewController.h; sourceTree = "<group>"; };
 		42A72CAB1702D868000B9133 /* RemindViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RemindViewController.m; sourceTree = "<group>"; };
+		42A97D111759D7EC00A33294 /* close.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = close.png; sourceTree = "<group>"; };
+		42A97D121759D7EC00A33294 /* close@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "close@2x.png"; sourceTree = "<group>"; };
+		42A97D15175A2A9900A33294 /* field.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = field.png; sourceTree = "<group>"; };
+		42A97D19175A2DDE00A33294 /* field@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "field@2x.png"; sourceTree = "<group>"; };
 		42B7572D16F447A500321736 /* KeyDiary.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KeyDiary.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		42B7573016F447A500321736 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		42B7573216F447A500321736 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -202,6 +213,24 @@
 				422A8B5F16FB23AB00DFAD66 /* GCDiscreetNotificationView.m */,
 			);
 			path = GCDiscreetNotificationView;
+			sourceTree = "<group>";
+		};
+		429A813617587D0500E10C4E /* DateExtend */ = {
+			isa = PBXGroup;
+			children = (
+				429A813317587CFE00E10C4E /* DateExtend.h */,
+				429A813417587CFE00E10C4E /* DateExtend.m */,
+			);
+			name = DateExtend;
+			sourceTree = "<group>";
+		};
+		429A813717587D9900E10C4E /* MBProgressHUD */ = {
+			isa = PBXGroup;
+			children = (
+				429FCC1F175AEDDB00BA62E8 /* MBProgressHUD.m */,
+				429FCC20175AEDDB00BA62E8 /* MBProgressHUD.h */,
+			);
+			name = MBProgressHUD;
 			sourceTree = "<group>";
 		};
 		42A3409616FC50EF00151444 /* MJPopupView */ = {
@@ -294,11 +323,15 @@
 		42B7573616F447A500321736 /* newKeyDiary */ = {
 			isa = PBXGroup;
 			children = (
+				429A813717587D9900E10C4E /* MBProgressHUD */,
 				42B7574816F447A500321736 /* MainStoryboard.storyboard */,
+				429A813617587D0500E10C4E /* DateExtend */,
 				422A8B5D16FB23AB00DFAD66 /* GCDiscreetNotificationView */,
 				42A56D9416FAA337004DA9E1 /* SSKeychain */,
 				42A46EC016F93A2D002120B4 /* AFNetworking */,
 				42A3409616FC50EF00151444 /* MJPopupView */,
+				42B7573F16F447A500321736 /* AppDelegate.h */,
+				42B7574016F447A500321736 /* AppDelegate.m */,
 				429E869116F4BE0C0025A4F3 /* SingleDay.h */,
 				429E869016F4BE0C0025A4F3 /* SingleDay.m */,
 				4282966216FF096500DAF832 /* DiaryRequest.h */,
@@ -319,14 +352,10 @@
 				42A44FF816F7E799005542D9 /* MonthTableViewController.m */,
 				42A23B0616F9ACD2001AD918 /* SBAPIManager.h */,
 				42A23B0716F9ACD2001AD918 /* SBAPIManager.m */,
-				42A46EE016F93C7C002120B4 /* MBProgressHUD.h */,
-				42A46EE116F93C7C002120B4 /* MBProgressHUD.m */,
 				42A23B0916F9C37A001AD918 /* DiaryViewController.h */,
 				42A23B0A16F9C37A001AD918 /* DiaryViewController.m */,
 				42B7575A16F447FA00321736 /* UIViewController+JASidePanel.h */,
 				42B7575916F447FA00321736 /* UIViewController+JASidePanel.m */,
-				42B7573F16F447A500321736 /* AppDelegate.h */,
-				42B7574016F447A500321736 /* AppDelegate.m */,
 				429E868D16F4B9350025A4F3 /* KeyDiary.xcdatamodeld */,
 				42B7576816F45DF700321736 /* SettingViewController.h */,
 				42B7576916F45DF700321736 /* SettingViewController.m */,
@@ -344,6 +373,10 @@
 		42B7573716F447A500321736 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				42A97D19175A2DDE00A33294 /* field@2x.png */,
+				42A97D15175A2A9900A33294 /* field.png */,
+				42A97D111759D7EC00A33294 /* close.png */,
+				42A97D121759D7EC00A33294 /* close@2x.png */,
 				42A2DD091753A6A1001D7CE7 /* setting.png */,
 				42A2DD0A1753A6A1001D7CE7 /* setting@2x.png */,
 				429E869316F4C2FF0025A4F3 /* pencil.png */,
@@ -442,6 +475,10 @@
 				42A2DD081753A65D001D7CE7 /* iTunesArtwork@2x in Resources */,
 				42A2DD0B1753A6A1001D7CE7 /* setting.png in Resources */,
 				42A2DD0C1753A6A1001D7CE7 /* setting@2x.png in Resources */,
+				42A97D131759D7ED00A33294 /* close.png in Resources */,
+				42A97D141759D7ED00A33294 /* close@2x.png in Resources */,
+				42A97D17175A2A9900A33294 /* field.png in Resources */,
+				42A97D1A175A2DDE00A33294 /* field@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -474,7 +511,6 @@
 				42A46EDB16F93A2D002120B4 /* AFXMLRequestOperation.m in Sources */,
 				42A46EDC16F93A2D002120B4 /* UIImageView+AFNetworking.m in Sources */,
 				42A46EDF16F93B4C002120B4 /* UserLogin.m in Sources */,
-				42A46EE216F93C7C002120B4 /* MBProgressHUD.m in Sources */,
 				42A23B0816F9ACD2001AD918 /* SBAPIManager.m in Sources */,
 				42A23B0B16F9C37B001AD918 /* DiaryViewController.m in Sources */,
 				42A56D9716FAA337004DA9E1 /* SSKeychain.m in Sources */,
@@ -485,6 +521,8 @@
 				42A3D28D16FC9E4900E6570C /* KeychainItemWrapper.m in Sources */,
 				4282966416FF096500DAF832 /* DiaryRequest.m in Sources */,
 				42A72CAC1702D868000B9133 /* RemindViewController.m in Sources */,
+				429A813517587CFE00E10C4E /* DateExtend.m in Sources */,
+				429FCC21175AEDDB00BA62E8 /* MBProgressHUD.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

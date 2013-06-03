@@ -266,7 +266,6 @@ typedef void (^MBProgressHUDCompletionBlock)();
  */
 - (void)showAnimated:(BOOL)animated whileExecutingBlock:(dispatch_block_t)block onQueue:(dispatch_queue_t)queue
 		  completionBlock:(MBProgressHUDCompletionBlock)completion;
-- (void)updateLabelText:(NSString *)text;
 
 /**
  * A block that gets called after the HUD was completely hidden.
@@ -277,7 +276,7 @@ typedef void (^MBProgressHUDCompletionBlock)();
 
 /** 
  * MBProgressHUD operation mode. The default is MBProgressHUDModeIndeterminate.
- *d
+ *
  * @see MBProgressHUDMode
  */
 @property (assign) MBProgressHUDMode mode;

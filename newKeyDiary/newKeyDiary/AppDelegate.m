@@ -19,6 +19,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    sleep(3);
     // Override point for customization after application launch.
     NSLog(@"didFinishLaunchingWithOptions %@", [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey]);
     MasterViewController *rootView = (MasterViewController *)_window.rootViewController;

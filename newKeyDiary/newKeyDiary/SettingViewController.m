@@ -36,11 +36,14 @@
     self.remindButton.hidden = YES;
     [self.accountButton setBackgroundColor:[UIColor whiteColor]];
     [self.remindButton setBackgroundColor:[UIColor whiteColor]];
-    [self setSettingMail:[self.sidePanelController.centerPanel getUsername]];
+    if (![self.sidePanelController.centerPanel ifLogged]) {
+        [self setSettingMail:@""];
+    } else {
+        [self setSettingMail:[self.sidePanelController.centerPanel getUsername]];
+    }
     NSLog(@"setting view did load");
     [self setRemindButtonTitle:[self.sidePanelController.centerPanel getRemindTime]];
     NSLog(@"setButtonName %@ %@", self.username, self.accountButton.titleLabel.text);
-	// Do any additional setup after loading the view.
 }
 
 - (void)setRemindButtonTitle:(NSString *)remindTime
@@ -92,7 +95,9 @@
 }
 
 - (IBAction)showLogin:(id)sender {
-    [self.sidePanelController.centerPanel showLoginForm:sender];
+    [self.sidePanelController.centerPanel logout];
+    
+    [self setSettingMail:@""];
 }
 
 - (IBAction)showRemind:(id)sender {
@@ -106,9 +111,15 @@
 
 - (void)setSettingMail:(NSString *)mail
 {
-    NSLog(@"setsetting mail %@", mail);
+    if (mail == nil) {
+        mail = @"";
+    }
     self.username = mail;
-    [self.accountButton setTitle:[NSString stringWithFormat:@"%@%@", NSLocalizedString(@"Logout : ", nil), self.username] forState:UIControlStateNormal];
+    if ([mail isEqual:@""]) {
+            [self.accountButton setTitle: NSLocalizedString(@"No Account", nil) forState:UIControlStateNormal];
+    } else {
+        [self.accountButton setTitle:[NSString stringWithFormat:@"%@%@", NSLocalizedString(@"Logout : ", nil), self.username] forState:UIControlStateNormal];
+    }
 }
 
 @end

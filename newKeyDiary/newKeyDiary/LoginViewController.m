@@ -48,6 +48,7 @@
     [self.loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     self.loginButton.layer.cornerRadius = 5.0f;
     NSLog(@"loginViewController viewDidLoad");
+    self.viewHeight = [self.view frame].size.height;
 	// Do any additional setup after loading the view.
 }
 
@@ -67,6 +68,9 @@
     } else {
         [self.delegate checkUserLogin:username password:password];
     }
+    [self.usernameField resignFirstResponder];
+    [self.passwordField resignFirstResponder];
+    [self viewBig:0];
 }
 - (IBAction)register:(id)sender {
     NSURL *registerUrl = [NSURL URLWithString:@"http://api.keydiary.net/app/accounts/register?redirectUrl=keydiary://login"];
@@ -80,7 +84,13 @@
         [nextResponder becomeFirstResponder];
     } else {
         [theTextField resignFirstResponder];
+        [self viewBig:0];
     }
+    return YES;
+}
+
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+    [self viewSmall:0];
     return YES;
 }
 
@@ -90,9 +100,11 @@
     UITouch *touch = [[event allTouches] anyObject];
     if ([touch view] != self.passwordField) {
         [self.passwordField resignFirstResponder];
+        [self viewBig:0];
     }
     if ([touch view] != self.usernameField) {
         [self.usernameField resignFirstResponder];
+        [self viewBig:0];
     }
 
     [super touchesBegan:touches withEvent:event];
@@ -107,4 +119,29 @@
     [self setLoginButton:nil];
     [super viewDidUnload];
 }
+
+- (void)viewSmall:(NSInteger)y {
+    CGRect screenBounds = [[UIScreen mainScreen] bounds];
+    float percent = (screenBounds.size.height == 480.0f ? 0.55 : 0.6);
+    UIView *view = self.view;
+    CGRect frame = [view frame];
+    CGRect endFrame = CGRectMake(frame.origin.x, frame.origin.y, frame.size.width, self.viewHeight * percent);
+    [UIView animateWithDuration:0.35 delay:0.0f options:UIViewAnimationOptionCurveEaseIn animations:^{
+        view.frame = endFrame;
+    } completion:^(BOOL finished) {
+    }];
+
+}
+
+- (void)viewBig:(NSInteger)y {
+    UIView *view = self.view;
+    CGRect frame = [view frame];
+    CGRect endFrame = CGRectMake(frame.origin.x, frame.origin.y, frame.size.width, self.viewHeight);
+    [UIView animateWithDuration:0.35 delay:0.0f options:UIViewAnimationOptionCurveEaseIn animations:^{
+        view.frame = endFrame;
+    } completion:^(BOOL finished) {
+    }];
+}
+
+
 @end
