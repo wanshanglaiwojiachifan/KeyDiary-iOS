@@ -16,12 +16,14 @@
 @end
 
 @interface LoginViewController : UIViewController<UITextFieldDelegate>
+
 @property (strong, nonatomic) IBOutlet UIButton *loginButton;
-- (IBAction)register:(id)sender;
 @property (strong, nonatomic) IBOutlet UITextField *usernameField;
 @property (strong, nonatomic) IBOutlet UITextField *passwordField;
 @property (nonatomic, weak) id<LoginViewControllerDelegate> delegate;
+@property (nonatomic, assign) NSInteger viewHeight;
 
 - (void)setLoginForm:(NSString *)username password:(NSString *)password;
+- (IBAction)register:(id)sender;
 
 @end

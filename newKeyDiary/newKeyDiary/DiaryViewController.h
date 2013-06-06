@@ -19,6 +19,8 @@
 
 @interface DiaryViewController : UIViewController<UITableViewDelegate, UITableViewDataSource, SliderPageControlDelegate, UIScrollViewDelegate, UserLoginDelegate, MBProgressHUDDelegate, LoginViewControllerDelegate, EditViewControllerDelegate, UITextFieldDelegate, DiaryRequestDelegate>
 @property (nonatomic, strong) NSString *launchUrl;
+@property (retain, nonatomic) NSCalendar *calendar;
+@property (assign, nonatomic) Boolean logged;
 
 /* for table scroll view*/
 @property (nonatomic, retain) UIScrollView *scrollView;
@@ -50,6 +52,7 @@
 - (void) showEditForm:(id)sender;
 - (void) hideEditForm:(id)sender;
 - (void) setLoginForm:(NSString *)username password:(NSString *)password;
+- (void) logout;
 
 /* for core data */
 - (void) updateDiary:(NSString *)dateStr keyword:(NSString *)keyword;
@@ -60,6 +63,7 @@
 
 - (NSString *)getUsername;
 - (NSString *)getRemindTime;
+- (Boolean)ifLogged;
 
 /* IBOutlet */
 @property (strong, nonatomic) IBOutlet UILabel *monthLabel;
@@ -67,5 +71,7 @@
 - (IBAction)showSetting:(id)sender;
 
 - (void)setRemindTime:(NSString *)remineTime;
-
+- (void) editFormMoveToCenter;
+- (void) editFormMoveToTop;
+- (UIView *)getSelfView;
 @end
