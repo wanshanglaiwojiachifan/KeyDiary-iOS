@@ -6,8 +6,8 @@
   Copyright (c) 2013 BlackXBlack. All rights reserved.
 */
 "Login..." = "登陆中...";
-"Upload Success" = "上传成功";
-"Upload Fail" = "上传失败";
+"Upload Success" = "编辑成功";
+"Upload Fail" = "编辑失败";
 "Delete Success" = "删除成功";
 "Delete Fail" = "删除失败";
 "Loading Diary..." = "加载日记...";
@@ -38,3 +38,15 @@
 "sure" = "确定一定以及肯定";
 "cancel" = "取消";
 "No Account" = "未登录";
+"Not more than 14 characters" = "超过七个字了哟";
+"OK" = "好，我知道了";
+"Server Error" = "服务器出错拉";
+"Content too long" = "日记太长啦，七个字就够啦";
+"Content empty" = "日记不能为空哦";
+"Date is out of today" = "无法记录的未来的日记哦";
+"Date is illegal" = "此日期非法";
+"Date is empty" = "日期不能为空";
+"Diary not found" = "没有找到日记";
+"Request Success" = "请求成功";
+"Unknown Error" = "未知错误";
+"Account Unauthorized" = "账户权限出错，请重新登录";

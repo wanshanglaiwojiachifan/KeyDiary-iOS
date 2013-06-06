@@ -31,7 +31,9 @@
 @property (nonatomic, weak) id<EditViewControllerDelegate> delegate;
 @property (nonatomic, assign) NSInteger rowIndex;
 @property (nonatomic, assign) NSInteger sectionIndex;
+@property (strong, nonatomic) IBOutlet UIButton *closeButton;
 
 - (void)setFormInfo:(DateExtend *)date keyword:(NSString *)keyword sectionIndex:(NSInteger)section rowIndex:(NSInteger)row sync:(BOOL)sync;
+- (void)setFieldFocus;
 
 @end

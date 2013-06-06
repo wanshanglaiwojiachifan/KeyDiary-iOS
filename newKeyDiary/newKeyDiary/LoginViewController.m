@@ -47,7 +47,7 @@
     [self.loginButton setBackgroundColor:themeColor];
     [self.loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     self.loginButton.layer.cornerRadius = 5.0f;
-    NSLog(@"loginViewController viewDidLoad");
+    //NSLog(@"loginViewController viewDidLoad");
     self.viewHeight = [self.view frame].size.height;
 	// Do any additional setup after loading the view.
 }
@@ -61,7 +61,7 @@
 - (IBAction)submitLogin:(id)sender {
     NSString *username = self.usernameField.text;
     NSString *password = self.passwordField.text;
-    NSLog(@"submitLogin %@ %@", username, password);
+    //NSLog(@"submitLogin %@ %@", username, password);
 
     if ([username isEqual: @""] || [password isEqual: @""]) {
         [self showAlertView:@"Login info is incomplete!"];

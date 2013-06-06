@@ -38,3 +38,15 @@
 "sure" = "sure";
 "cancel" = "cancel";
 "No Account" = "No Account";
+"Not more than 14 characters" = "Not more than 14 characters";
+"OK" = "OK";
+"Server Error" = "Server Error";
+"Content too long" = "Content too long";
+"Content empty" = "Content empty";
+"Date is out of today" = "Date is out of today";
+"Date is illegal" = "Date is illegal";
+"Date is empty" = "Date is empty";
+"Diary not found" = "Diary not found";
+"Request Success" = "Request Success";
+"Unknown Error" = "Unknown Error";
+"Account Unauthorized" = "Account Unauthorized";

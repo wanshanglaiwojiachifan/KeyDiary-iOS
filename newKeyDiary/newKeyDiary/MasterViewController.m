@@ -38,7 +38,7 @@
 
 - (void) awakeFromNib
 {
-    NSLog(@"awakeFromNib");
+    //NSLog(@"awakeFromNib");
     [self setCenterPanel:[self.storyboard instantiateViewControllerWithIdentifier:@"DiaryViewController"]];
     [self setRightPanel:[self.storyboard instantiateViewControllerWithIdentifier:@"SettingViewController"]];
     self.allowRightSwipe = YES;

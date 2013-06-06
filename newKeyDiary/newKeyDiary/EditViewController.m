@@ -22,7 +22,6 @@
 @end
 
 @implementation EditViewController{
-    NSString *currentDateStr;
     NSDateFormatter *dateFormatYMD;
     NSDateFormatter *dateFormatYM;
     NSDateFormatter *dateFormatD;
@@ -57,18 +56,14 @@
     
     dateFormatD = [[NSDateFormatter alloc] init];
     [dateFormatD setDateFormat:@"dd"];
-
-    currentDateStr = [self getYMD:[NSDate date]];
-    self.DateField.text = currentDateStr;
     
     _themeColor = [UIColor colorWithRed:69/255.0 green:212/255.0 blue:218/255.0 alpha:1.0];
-
     [self.saveButton setBackgroundColor:_themeColor];
     [self.saveButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     self.saveButton.layer.cornerRadius = 5.0f;
     
-    self.deleteButton.layer.cornerRadius = 5.0f;
-    [self.deleteButton setTitleColor:_themeColor forState:UIControlStateNormal];
+    self.closeButton.layer.cornerRadius = 5.0f;
+    [self.closeButton setTitleColor:_themeColor forState:UIControlStateNormal];
 }
 
 - (NSString *)getYearAndMonth:(NSDate *)date{
@@ -92,10 +87,11 @@
 
 - (void)setFormInfo:(DateExtend *)date keyword:(NSString *)keyword sectionIndex:(NSInteger)section rowIndex:(NSInteger)row sync:(BOOL)sync
 {
-    NSLog(@"setFormInfo section - %d, row - %d", section, [date weekday]);
+    //NSLog(@"setFormInfo section - %d, row - %d", section, [date weekday]);
     //[self.KeywordField becomeFirstResponder];
     _current = date;
     keywordBefore = keyword;
+    self.KeywordField.backgroundColor = [UIColor whiteColor];
     self.DateField.text =  [NSString stringWithFormat:@"%@ %@", [_current toString:@"yyyy-MM-dd"], [self getWeekdayChinese:[_current weekday]]];
     self.KeywordField.text = keyword;
     self.sectionIndex = section;
@@ -109,12 +105,15 @@
         [self.saveButton setTitle:NSLocalizedString(@"Save", nil) forState:UIControlStateNormal];
         [self.deleteButton setTitle:NSLocalizedString(@"Delete", nil) forState:UIControlStateNormal];
     }
+    [self.saveButton setContentEdgeInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
+    [self.saveButton sizeToFit];
+    CGRect buttonFrame = self.saveButton.frame;
+    CGRect frame = self.view.frame;
+    [self.saveButton setFrame:CGRectMake(frame.size.width - 12 - buttonFrame.size.width, buttonFrame.origin.y, buttonFrame.size.width, buttonFrame.size.height)];
 }
 
 
 - (IBAction)saveDiary:(id)sender {
-    [self.KeywordField resignFirstResponder];
-
     [self doSave];
 }
 
@@ -126,7 +125,7 @@
     } else if (textField == self.KeywordField) {
         [self.delegate editFormMoveToTop];
     }
-    NSLog(@"textFieldShouldBeginEditing");
+    //NSLog(@"textFieldShouldBeginEditing");
     return YES;
 }
 
@@ -164,8 +163,8 @@
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
     NSString *newString = [textField.text stringByReplacingCharactersInRange:range withString:string];
-    NSString *newStringClean = [newString stringByReplacingOccurrencesOfString:@" " withString:@""];
-    NSLog(@"shouldChangeCharactersInRange %d %@", [self getKeywordCount:newStringClean], newStringClean);
+    NSString *newStringClean = [self getCleanString:newString];
+    //NSLog(@"shouldChangeCharactersInRange %d %@", [self getKeywordCount:newStringClean], newStringClean);
     //区分中文7个字和英文14个字 todo
     if ([self getKeywordCount:newStringClean] > 14) {
         self.KeywordField.backgroundColor = [UIColor colorWithRed:255.0f/255.0f green:170.0f/255.0f blue:170.0f/255.0f alpha:1.0f];
@@ -177,7 +176,7 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField *)theTextField {
     if (theTextField == self.KeywordField) {
-        NSLog(@"textFieldShouldReturn");
+        //NSLog(@"textFieldShouldReturn");
 
         [theTextField resignFirstResponder];
         [self.delegate editFormMoveToCenter];
@@ -199,20 +198,24 @@
 }
 - (void)doSave
 {
-    NSLog(@"doSave section - %d, row - %d", self.sectionIndex, self.rowIndex);
+    //NSLog(@"doSave section - %d, row - %d", self.sectionIndex, self.rowIndex);
     NSString *keyword = self.KeywordField.text;
-    NSString *cleanString = [keyword stringByReplacingOccurrencesOfString:@" " withString:@""];//[keyword stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-
+    NSString *cleanString = [self getCleanString:keyword];
+    
     //NSLog(@"doSave %@ %d", cleanString, [self getKeywordCount:cleanString]);
     if ([self getKeywordCount:cleanString] > 14) {
-        NSLog(@"key word > 14");
-        self.KeywordField.backgroundColor = [UIColor redColor];
+        self.KeywordField.backgroundColor = [UIColor colorWithRed:255.0f/255.0f green:170.0f/255.0f blue:170.0f/255.0f alpha:1.0f];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Not more than 14 characters", nil) message:@"" delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", nil) otherButtonTitles:nil];
+        [alert show];
     } else {
+        [self.KeywordField resignFirstResponder];
+        [self.delegate editFormMoveToCenter];
         self.KeywordField.backgroundColor = [UIColor whiteColor];
+        NSString *dateStr = [_current toString:@"yyyy-MM-dd"];
         if ([cleanString isEqualToString:@""]) {
-            [self.delegate deleteDiary:currentDateStr sectionIndex:self.sectionIndex rowIndex:self.rowIndex];
+            [self.delegate deleteDiary:dateStr sectionIndex:self.sectionIndex rowIndex:self.rowIndex];
         } else {
-            [self.delegate updateDiary:currentDateStr keyword:keyword sectionIndex:self.sectionIndex rowIndex:self.rowIndex];
+            [self.delegate updateDiary:dateStr keyword:keyword sectionIndex:self.sectionIndex rowIndex:self.rowIndex];
         }
     }
 }
@@ -224,6 +227,14 @@
     return bytes;
 }
 
+- (NSString *)getCleanString:(NSString *)origin {
+    NSString *newStringClean = [origin stringByReplacingOccurrencesOfString:@" " withString:@""];
+    //newStringClean = [newStringClean stringByReplacingOccurrencesOfString:@"," withString:@""];
+    //newStringClean = [newStringClean stringByReplacingOccurrencesOfString:@"." withString:@""];
+    //newStringClean = [newStringClean stringByReplacingOccurrencesOfString:@"。" withString:@""];
+    //newStringClean = [newStringClean stringByReplacingOccurrencesOfString:@"，" withString:@""];
+    return newStringClean;
+}
 
 
 - (IBAction)deleteButton:(id)sender {
@@ -233,22 +244,28 @@
 - (void)viewDidUnload {
     [self setSaveButton:nil];
     [self setDeleteButton:nil];
+    [self setCloseButton:nil];
     [super viewDidUnload];
 }
 
 /* action delegate */
 - (void) actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
-    NSLog(@"didDismissWithButtonIndex %@ %d", [actionSheet buttonTitleAtIndex:buttonIndex], buttonIndex);
+    //NSLog(@"didDismissWithButtonIndex %@ %d", [actionSheet buttonTitleAtIndex:buttonIndex], buttonIndex);
+    NSString *str = [_current toString:@"yyyy-MM-dd"];
     if (buttonIndex == 0) {
         if (forSync) {
-            [self.delegate dropDiary:currentDateStr sectionIndex:self.sectionIndex rowIndex:self.rowIndex];
+            [self.delegate dropDiary:str sectionIndex:self.sectionIndex rowIndex:self.rowIndex];
         } else {
-            [self.delegate deleteDiary:currentDateStr sectionIndex:self.sectionIndex rowIndex:self.rowIndex];
+            [self.delegate deleteDiary:str sectionIndex:self.sectionIndex rowIndex:self.rowIndex];
         }
     }
 }
 - (IBAction)closeClick:(id)sender {
     [self.delegate hideEditForm:nil];
+}
+
+- (void)setFieldFocus {
+    [self.KeywordField becomeFirstResponder];
 }
 
 @end

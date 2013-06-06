@@ -41,9 +41,9 @@
     } else {
         [self setSettingMail:[self.sidePanelController.centerPanel getUsername]];
     }
-    NSLog(@"setting view did load");
+    //NSLog(@"setting view did load");
     [self setRemindButtonTitle:[self.sidePanelController.centerPanel getRemindTime]];
-    NSLog(@"setButtonName %@ %@", self.username, self.accountButton.titleLabel.text);
+    //NSLog(@"setButtonName %@ %@", self.username, self.accountButton.titleLabel.text);
 }
 
 - (void)setRemindButtonTitle:(NSString *)remindTime

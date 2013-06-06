@@ -12,6 +12,7 @@
 #import "SBAPIManager.h"
 #import "SingleDay.h"
 #import "KeychainItemWrapper.h"
+#import "SBJson.h"
 
 @implementation UserLogin
 
@@ -23,15 +24,22 @@
     //username = @"black.caffeine@gmail.com";
     //password = @"222222";
     NSString *totalUrl = [NSString stringWithFormat:@"/accounts/verify%@", [self getURLString]];
-    NSLog(@"checkUserExist %@ %@", username, password);
+    //NSLog(@"checkUserExist %@ %@", username, password);
     [[SBAPIManager sharedManager] setUsername:username andPassword:password];
     
     [[SBAPIManager sharedManager] getPath:totalUrl parameters:nil success:^(AFHTTPRequestOperation *operation, id JSON) {
-        NSLog(@"after check %@", [JSON class]);
+        //NSLog(@"after check %@", [JSON class]);
         [self.delegate checkUserCallback:JSON code:[operation.response statusCode]];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"Request Failure Because %@ %d",[error userInfo], [operation.response statusCode]);
-        [self.delegate checkUserCallback:nil code:[operation.response statusCode]];
+        //NSLog(@"Request Failure Because %@ %d",[error userInfo], [operation.response statusCode]);
+        if ([operation.response statusCode] != 0 && [[error userInfo] objectForKey:@"NSLocalizedRecoverySuggestion"] != [NSNull null]) {
+            NSString *res = [[error userInfo] objectForKey:@"NSLocalizedRecoverySuggestion"];
+            SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+            [self.delegate checkUserCallback:[jsonParser objectWithString:res] code:[operation.response statusCode]];
+        } else  {
+
+            [self.delegate checkUserCallback:nil code:[operation.response statusCode]];
+        }
     }];
 
 }
@@ -39,15 +47,21 @@
 - (void)getDiary:(NSString *)username password:(NSString *)password
 {
     NSString *totalUrl = [NSString stringWithFormat:@"/diaries%@", [self getURLString]];
-    NSLog(@"checkUserExist %@", totalUrl);
+    //NSLog(@"checkUserExist %@", totalUrl);
     [[SBAPIManager sharedManager] setUsername:username andPassword:password];
     
     [[SBAPIManager sharedManager] getPath:totalUrl parameters:nil success:^(AFHTTPRequestOperation *operation, id JSON) {
-        NSLog(@"IP Address: %@", [JSON class]);
+        //NSLog(@"IP Address: %@", [JSON class]);
         [self.delegate getUserDiaryCallback:JSON code:[operation.response statusCode]];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"Request Failure Because %@ %d",[error userInfo], [operation.response statusCode]);
-        [self.delegate getUserDiaryCallback:nil code:[operation.response statusCode]];
+        //NSLog(@"Request Failure Because %@ %d",[error userInfo], [operation.response statusCode]);
+        if ([operation.response statusCode] != 0 && [[error userInfo] objectForKey:@"NSLocalizedRecoverySuggestion"] != [NSNull null]) {
+            NSString *res = [[error userInfo] objectForKey:@"NSLocalizedRecoverySuggestion"];
+            SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+            [self.delegate getUserDiaryCallback:[jsonParser objectWithString:res] code:[operation.response statusCode]];
+        } else  {
+            [self.delegate getUserDiaryCallback:nil code:[operation.response statusCode]];
+        }
     }];
 }
 
@@ -59,7 +73,7 @@
 /* 用户密码存储 */
 - (void)setUserInfo:(NSString *)username password:(NSString *)password
 {
-    NSLog(@"set user info");
+    //NSLog(@"set user info");
     /*NSArray *allUsers = [self getAllUserInfo];
     //NSLog(@"setUserInfo %@", allUsers);
     for (int i = 0; i < [allUsers count] - 1; i++) {
@@ -74,12 +88,12 @@
 
 - (id)getUsername
 {
-    NSLog(@"get user name");
+    //NSLog(@"get user name");
     return [self.keychain objectForKey:(__bridge id)(kSecAttrAccount)];
 }
 - (id)getPassword
 {
-    NSLog(@"get pass word");
+    //NSLog(@"get pass word");
     return [_keychain objectForKey:(__bridge id)(kSecValueData)];
 }
 - (void)deletePassword
