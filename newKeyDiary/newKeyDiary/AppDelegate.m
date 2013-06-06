@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 #import "MasterViewController.h"
 #import "DiaryViewController.h"
+#import "MobClick.h"
 
 @implementation AppDelegate
 
@@ -19,8 +20,10 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    sleep(2);
+    [MobClick startWithAppkey:@"51aeadce56240ba32a00619d"];
     // Override point for customization after application launch.
-    NSLog(@"didFinishLaunchingWithOptions %@", [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey]);
+    //NSLog(@"didFinishLaunchingWithOptions %@", [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey]);
     MasterViewController *rootView = (MasterViewController *)_window.rootViewController;
     self.centerPanel = (DiaryViewController *)rootView.centerPanel;
     self.centerPanel.managedObjectContext = [self managedObjectContext];
@@ -46,6 +49,7 @@
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
+    //NSLog(@"applicationWillEnterForeground %@", self.centerPanel);
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
 }
 
@@ -61,14 +65,14 @@
 
 - (void)saveContext
 {
-    NSLog(@"saveContext");
+    //NSLog(@"saveContext");
     NSError *error = nil;
     NSManagedObjectContext *managedObjectContext = self.managedObjectContext;
     if (managedObjectContext != nil) {
         if ([managedObjectContext hasChanges] && ![managedObjectContext save:&error]) {
             // Replace this implementation with code to handle the error appropriately.
             // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+            //NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
             abort();
         }
     }
@@ -140,7 +144,7 @@
          Lightweight migration will only work for a limited set of schema changes; consult "Core Data Model Versioning and Data Migration Programming Guide" for details.
          
          */
-        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        //NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
     }
     
@@ -157,17 +161,17 @@
 
 - (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken
 {
-	NSLog(@"My token is: %@", deviceToken);
+	//NSLog(@"My token is: %@", deviceToken);
 }
 
 - (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error
 {
-	NSLog(@"Failed to get token, error: %@", error);
+	//NSLog(@"Failed to get token, error: %@", error);
 }
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 {
-    NSLog(@"get from safari %@", [url absoluteString]);
+    //NSLog(@"get from safari %@", [url absoluteString]);
     NSString *urlString = [url absoluteString];
     NSArray *arr = [urlString componentsSeparatedByString:@"?email="];
     if ([arr count] > 1) {
@@ -175,4 +179,5 @@
     }
     return YES;
 }
+
 @end

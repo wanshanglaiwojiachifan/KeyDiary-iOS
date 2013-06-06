@@ -243,6 +243,28 @@ static void * const keypath = (void*)&keypath;
     }];
 }
 
+- (void)popupMoveToY:(NSInteger)y {
+    if (self.mj_popupViewController) {
+        UIView *sourceView = [self topView];
+        UIView *overlayView = [sourceView viewWithTag:kMJOverlayViewTag];
+        CGRect overlayStart = [overlayView frame];
+        CGRect overlayEnd = CGRectMake(overlayStart.origin.x, y, overlayStart.size.width, overlayStart.size.height);
+        [UIView animateWithDuration:kPopupModalAnimationDuration delay:0.0f options:UIViewAnimationOptionCurveEaseOut animations:^{
+            [self.mj_popupViewController viewWillAppear:NO];
+            self.mj_popupBackgroundView.alpha = 1.0f;
+            overlayView.frame = overlayEnd;
+        } completion:^(BOOL finished) {
+            [self.mj_popupViewController viewDidAppear:NO];
+        }];
+    }
+}
+
+- (void)popupMoveToCenter {
+    if (self.mj_popupViewController) {
+        [self popupMoveToY:0];
+    }
+}
+
 - (void)slideViewOut:(UIView*)popupView sourceView:(UIView*)sourceView overlayView:(UIView*)overlayView withAnimationType:(MJPopupViewAnimation)animationType
 {
     // Generating Start and Stop Positions
@@ -329,6 +351,5 @@ static void * const keypath = (void*)&keypath;
         self.mj_popupViewController = nil;
     }];
 }
-
 
 @end

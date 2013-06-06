@@ -10,6 +10,7 @@
 #import "AFNetworking/AFHTTPClient.h"
 #import "AFJSONRequestOperation.h"
 #import "SBAPIManager.h"
+#import "SBJson.h"
 
 @implementation DiaryRequest
 
@@ -23,15 +24,21 @@
     self.sectionIndex = section;
 
     NSString *totalUrl = [NSString stringWithFormat:@"/diaries/upsert%@", [self getURLString]];
-    NSLog(@"userlogin insertDiary %@", totalUrl);
+    //NSLog(@"userlogin insertDiary %@", totalUrl);
     [[SBAPIManager sharedManager] setUsername:username andPassword:password];
     NSDictionary *dict = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:dateStr, keyword, nil] forKeys:[NSArray arrayWithObjects:@"d", @"content", nil]];
     [[SBAPIManager sharedManager] postPath:totalUrl parameters:dict success:^(AFHTTPRequestOperation *operation, id JSON) {
-        NSLog(@"insertDiary: %@", [JSON valueForKeyPath:@"stat"]);
+        //NSLog(@"insertDiary: %@", [JSON valueForKeyPath:@"stat"]);
         [self.delegate insertDiaryCallback:JSON code:[operation.response statusCode] sectionIndex:self.sectionIndex rowIndex:self.rowIndex];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"insertDiary Request Failure Because %@ %d",[error userInfo], [operation.response statusCode]);
-        [self.delegate insertDiaryCallback:nil code:[operation.response statusCode] sectionIndex:self.sectionIndex rowIndex:self.rowIndex];
+        //NSLog(@"insertDiary Request Failure Because %@ %d",[[error userInfo] objectForKey:@"NSLocalizedRecoverySuggestion"] , [operation.response statusCode]);
+        if ([operation.response statusCode] != 0 && [[error userInfo] objectForKey:@"NSLocalizedRecoverySuggestion"] != [NSNull null]) {
+            NSString *res = [[error userInfo] objectForKey:@"NSLocalizedRecoverySuggestion"];
+            SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+            [self.delegate insertDiaryCallback:[jsonParser objectWithString:res] code:[operation.response statusCode] sectionIndex:self.sectionIndex rowIndex:self.rowIndex];
+        } else  {
+            [self.delegate insertDiaryCallback:nil code:[operation.response statusCode] sectionIndex:self.sectionIndex rowIndex:self.rowIndex];
+        }
     }];
 }
 - (void)deleteDiary:(NSString *)username password:(NSString *)password dateStr:(NSString *)dateStr  sectionIndex:(NSInteger)section rowIndex:(NSInteger)row
@@ -41,24 +48,30 @@
     
     
     NSString *totalUrl = [NSString stringWithFormat:@"/diaries/remove%@", [self getURLString]];
-    NSLog(@"userlogin deleteDiary %@", totalUrl);
+    //NSLog(@"userlogin deleteDiary %@", totalUrl);
     [[SBAPIManager sharedManager] setUsername:username andPassword:password];
     //todo 改成POST
     //d 日记日期，格式为 YYYY-MM-DD
     //content 日记内容，长度不能超过 14 个字符
     NSDictionary *dict = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:dateStr, nil] forKeys:[NSArray arrayWithObjects:@"d", nil]];
     [[SBAPIManager sharedManager] postPath:totalUrl parameters:dict success:^(AFHTTPRequestOperation *operation, id JSON) {
-        NSLog(@"deleteDiary userlogin callback: %@", [JSON valueForKeyPath:@"stat"]);
+        //NSLog(@"deleteDiary userlogin callback: %@", [JSON valueForKeyPath:@"stat"]);
         [self.delegate deleteDiaryCallback:JSON code:[operation.response statusCode] sectionIndex:self.sectionIndex rowIndex:self.rowIndex];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"deleteDiary Request Failure Because %@ %d",[error userInfo], [operation.response statusCode]);
-        [self.delegate deleteDiaryCallback:nil code:[operation.response statusCode] sectionIndex:self.sectionIndex rowIndex:self.rowIndex];
+        //NSLog(@"deleteDiary Request Failure Because %@ %d",[error userInfo], [operation.response statusCode]);
+        if ([operation.response statusCode] != 0 && [[error userInfo] objectForKey:@"NSLocalizedRecoverySuggestion"] != [NSNull null]) {
+            NSString *res = [[error userInfo] objectForKey:@"NSLocalizedRecoverySuggestion"];
+            SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+            [self.delegate deleteDiaryCallback:[jsonParser objectWithString:res] code:[operation.response statusCode] sectionIndex:self.sectionIndex rowIndex:self.rowIndex];
+        } else  {
+            [self.delegate deleteDiaryCallback:nil code:[operation.response statusCode] sectionIndex:self.sectionIndex rowIndex:self.rowIndex];
+        }
     }];
 }
 
 - (void)setRemindTime:(NSString *)username password:(NSString *)password remindTime:(NSString *)remindTime
 {
-    NSLog(@"setRemindTime %@", remindTime);
+    //NSLog(@"setRemindTime %@", remindTime);
     [self.delegate setRemindTimeCallback:nil code:0];
 }
 

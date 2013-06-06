@@ -20,12 +20,13 @@
 #import "SettingViewController.h"
 #import "DiaryViewCell.h"
 #import "DiaryRequest.h"
+#import "DateExtend.h"
+#import "HTTPStatus.h"
 
 @interface DiaryViewController ()
 
 @property (nonatomic, strong) UserLogin *userLogin;
 @property (nonatomic, strong) MBProgressHUD *progressView;
-@property (nonatomic, strong) UIAlertView *alertView;
 @property (nonatomic, strong) UIView *loginContainer;
 @property (nonatomic, strong) GCDiscreetNotificationView *notificationView;
 
@@ -57,6 +58,7 @@
 @synthesize loginForm;
 @synthesize editForm;
 @synthesize launchUrl;
+@synthesize calendar;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -67,10 +69,18 @@
     return self;
 }
 
+- (NSCalendar *)calendar {
+    if (calendar == nil) {
+        calendar = [NSCalendar currentCalendar];
+    }
+    return calendar;
+}
+
 - (void)viewDidLoad
 {
-    NSLog(@"Diary view did load %@", [self.sidePanelController class]);
+    //NSLog(@"Diary view did load %@", [self.sidePanelController class]);
     [super viewDidLoad];
+    self.logged = NO;
     self.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 
     _currentSectionDate = [self getCurrentDate];
@@ -79,12 +89,11 @@
     
     _currentDate = [self getCurrentDate];
     dataReady = NO;
-    NSLog(@"current date %@ %@", _currentDate, [NSString stringWithFormat:@"%@-%@-01", year, month]);
+    //NSLog(@"current date %@ %@", _currentDate, [NSString stringWithFormat:@"%@-%@-01", year, month]);
     
     // do init
     [self initUserLogin];
     //[self initProgressView];
-    [self initAlertView];
     [self initLoginForm];
     [self initEditForm];
 
@@ -99,7 +108,7 @@
 /* APP启动时，检查用户信息 */
 - (void)checkUserWhenStart{
     NSString *username = [self.userLogin getUsername];
-    NSLog(@"checkUserWhenStart list %@", username);
+    //NSLog(@"checkUserWhenStart list %@", username);
     if (!username || [username isEqualToString:@""] || [username isEqualToString:@"(null)"]) {
         _username = @"";
         _password = @"";
@@ -107,22 +116,28 @@
     } else {
         NSString *password = [self.userLogin getPassword];
         NSArray *info = [self getUserInfoFromCoreData:username];
-        NSLog(@"getUserInfo Array %@", info);
+        //NSLog(@"getUserInfo Array %@", info);
         if (info != nil && [info count] >= 3) {
-            NSDate *lastLogin = [self strToDateByFormat:[info objectAtIndex:2] format:@"yyyy-MM-dd HH:mm:ss"];
             if ([info count] >= 4 && [info objectAtIndex:3] != nil && ![[info objectAtIndex:3] isEqual: @"(null)"]) {
                 _remindTime = (NSString *)[info objectAtIndex:3];
             } else {
                 _remindTime = @"NO";
             }
-            if ([self getDateCount:lastLogin endDate:_currentDate] < 30) {
+            if (![[info objectAtIndex:2] isEqual:@""]) {
+                NSDate *lastLogin = [self strToDateByFormat:[info objectAtIndex:2] format:@"yyyy-MM-dd HH:mm:ss"];
+                if ([self getDateCount:lastLogin endDate:_currentDate] < 30) {
+                    self.logged = YES;
+                    _username = username;
+                    _password = password;
+                    _userStartDate = [self strToDateByFormat:[info objectAtIndex:1] format:@"yyyy-MM-dd HH:mm:ss"];
+                    [self initUserView:username password:password created:[info objectAtIndex:0]];
+                } else {
+                    [self checkUserLogin:username password:password];
+                }
+            } else {
                 _username = username;
                 _password = password;
-                _userStartDate = [self strToDateByFormat:[info objectAtIndex:1] format:@"yyyy-MM-dd HH:mm:ss"];
-                NSLog(@"initUserView by cor data");
-                [self initUserView:username password:password created:[info objectAtIndex:0]];
-            } else {
-                [self checkUserLogin:username password:password];
+                [self showLoginForm:nil];
             }
         } else {
             _remindTime = @"NO";
@@ -134,19 +149,22 @@
 /* 登录完成之后初始化用户信息 */
 - (void)initUserInfo:(NSString *)username password:(NSString *)password startDate:(NSString *)startDate
 {
-    NSLog(@"initUserInfo %@, %@, %@", username, password, startDate);
+    //NSLog(@"initUserInfo %@, %@, %@", username, password, startDate);
     _username = username;
     _password = password;
     _userRegDate = startDate == nil ? [self getCurrentDate] : [self strToDateByFormat:startDate format:@"yyyy-MM-dd HH:mm:ss"];
-    SettingViewController *rightPanel = (SettingViewController *)self.sidePanelController.rightPanel;
+    /*SettingViewController *rightPanel = (SettingViewController *)self.sidePanelController.rightPanel;
     [rightPanel.view setFrame:[self.view bounds]];
-    [rightPanel setSettingMail:username];
-    NSLog(@"initUserInfo done regdate - %@, %@ %@", _userRegDate, [self strToDateByFormat:@"2013-03-25 23:38:46" format:@"yyyy-MM-dd HH:mm:ss"], [startDate class]);
+    [rightPanel setSettingMail:_username];*/
 }
 
 - (NSString *)getUsername
 {
     return _username;
+}
+
+- (Boolean)ifLogged {
+    return self.logged;
 }
 
 - (NSString *)getRemindTime
@@ -166,15 +184,12 @@
     if (self.progressView != nil) {
         [self.progressView removeFromSuperview];
     }
-    self.progressView = [[MBProgressHUD alloc] initWithView:self.view];
-    [self.view addSubview:self.progressView];
+    self.progressView = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    //self.progressView.mode = MBProgressHUDModeAnnularDeterminate;
+    //[self.view addSubview:self.progressView];
     self.progressView.delegate = self;
 }
 
-- (void)initAlertView
-{
-    self.alertView = [[UIAlertView alloc] initWithTitle:@"Sorry" message:@"" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-}
 - (void)initLoginForm
 {
     
@@ -210,8 +225,7 @@
     //if (self.progressView == nil) {
         [self initProgressView];
     //}
-    [self.progressView updateLabelText:text];
-    NSLog(@"showProgress %@", self.progressView.labelText);
+    self.progressView.labelText = text;
     [self.progressView show:YES];
 }
 
@@ -222,15 +236,16 @@
 
 - (void)showAlertView:(NSString *)info
 {
-    [self.alertView setMessage:info];
-    [self.alertView show];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Sorry" message:info delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", nil) otherButtonTitles:nil];
+    [alert show];
 }
 
 - (void)showNotification:(NSString *)text activity:(BOOL)activity delay:(NSInteger)delay
 {
-    NSLog(@"showNotification %@", text);
     if (self.notificationView) {
+        self.notificationView.textLabel = @"";
         [self.notificationView removeFromSuperview];
+        self.notificationView = nil;
     }
     self.notificationView = [[GCDiscreetNotificationView alloc] initWithText:text showActivity:activity inPresentationMode:GCDiscreetNotificationViewPresentationModeTop inView:self.view];
     if (self.notificationView == nil) {
@@ -248,17 +263,17 @@
 /* 密码不正常或者未注册，出登录页面 */
 - (void)checkUserLogin:(NSString *)username password:(NSString *)password
 {
-    NSLog(@"checkUserLogin %@, %@", username, password);
+    //NSLog(@"checkUserLogin %@, %@", username, password);
     [self showProgress:NSLocalizedString(@"Login...", nil)];
     [self.notificationView hide:NO];
     if (_username != username) {
-        NSLog(@"a new user %@", username);
+        //NSLog(@"a new user %@", username);
         /* 如果登录用户名和之前登录的不同,则删除本地所有日记 */
         NSManagedObjectContext *context = [self.fetchedResultsController managedObjectContext];
         [self deleteAllDiary:context];
         NSError *error;
         if (![context save:&error]) {
-            NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);            
+            //NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
             abort();
         }
     }
@@ -269,14 +284,13 @@
 /* 检查用户登录的回调函数 */
 - (void)checkUserCallback:(NSDictionary *)userInfo code:(NSInteger)code
 {
-    if (userInfo != nil && [[NSString stringWithFormat:@"%@", [userInfo valueForKeyPath:@"stat"]] isEqual:@"1"]) {
-        NSLog(@"checkUserCallback %@", userInfo);
+    NSInteger stat = userInfo != nil && [userInfo objectForKey:@"stat"] != [NSNull null] ? [[userInfo objectForKey:@"stat"] integerValue] : 0;
+
+    if (stat == 1) {
+        self.logged = YES;
         NSDictionary *data = [userInfo valueForKeyPath:@"data"];
         NSString *created =  [data valueForKeyPath:@"created"];
-        NSLog(@"check callback %@", [[userInfo valueForKeyPath:@"stat"] class]);
-        NSLog(@"check callback 2 %@", created);
-
-        NSLog(@"initUserView by service");
+        [(SettingViewController *)self.sidePanelController.rightPanel setSettingMail:_username];
         [self initUserView:_username password:_password created:created];
     } else {
         //[self.loginForm setLoginForm:_username password:_password];
@@ -294,14 +308,13 @@
 
 - (void)initUserView:(NSString *)username password:(NSString *)password created:(NSString *)created
 {
-    //[self.loginForm setLoginForm:_username password:_password];
-    NSLog(@"initUserView");
+    //NSLog(@"initUserView");
     dataReady = NO;
     [self.userLogin setUserInfo:_username password:_password];
     [self hideLoginForm:nil];
 
     [self showProgress:[NSString stringWithFormat:@"Welcome %@", _username]];
-    
+
     [self initUserInfo:_username password:_password startDate:created];
     [self getUserDiary];
 }
@@ -311,9 +324,10 @@
 {
     [self hideProgress];
     NSString *dateStr = [self getDateStrBySectionRow:section row:row];
-    NSLog(@"insertDiaryCallback %@ section - %d row - %d date - %@", insertInfo, section, row, dateStr);
+    NSInteger stat = insertInfo != nil && [insertInfo objectForKey:@"stat"] != [NSNull null] ? [[insertInfo objectForKey:@"stat"] integerValue] : 0;
+    //NSLog(@"insertDiaryCallback %@ section - %d row - %d date - %@ stat - %d", insertInfo, section, row, dateStr, stat);
 
-    if (insertInfo != nil && [[NSString stringWithFormat:@"%@", [insertInfo valueForKeyPath:@"stat"]] isEqualToString:@"1"]) {
+    if (stat == 1) {
         [self updateStatusInDiary:dateStr success:@"0"];
         [self showNotification:NSLocalizedString(@"Upload Success", nil) activity:NO delay:2];
     } else {
@@ -322,8 +336,10 @@
             [self showAlertView:NSLocalizedString(@"Network Failed", nil)];
         } else {
             //检查网络不佳还是密码错误导致的 todo
-            [self showNotification:NSLocalizedString(@"Upload Fail", nil) activity:NO delay:2];
-            [self showLoginForm:nil];
+            [self showAlertView:[HTTPStatus getStringByStat:stat]];
+            if (stat == 3) {
+                [self showLoginForm:nil];
+            }
         }
     }
     UITableView *tableView = [self getCurrentTableView];
@@ -335,17 +351,21 @@
 {
     [self hideProgress];
     NSString *dateStr = [self getDateStrBySectionRow:section row:row];
-    NSLog(@"deleteDiaryCallback %@ section - %d row - %d, date - %@", deleteInfo, section, row, dateStr);
-    if (deleteInfo != nil && [[NSString stringWithFormat:@"%@", [deleteInfo valueForKeyPath:@"stat"]] isEqualToString:@"1"]) {
+    NSInteger stat = deleteInfo != nil && [deleteInfo objectForKey:@"stat"] != [NSNull null] ? [[deleteInfo objectForKey:@"stat"] integerValue] : 0;
+
+    //NSLog(@"deleteDiaryCallback %@ section - %d row - %d, date - %@", deleteInfo, section, row, dateStr);
+    if (stat == 1) {
         [self updateStatusInDiary:dateStr success:@"0"];
         [self showNotification:NSLocalizedString(@"Delete Success", nil) activity:NO delay:2];
     } else {
         [self updateStatusInDiary:dateStr success:@"1"];
         if (code == 0) {
             [self showAlertView:NSLocalizedString(@"Network Failed", nil)];
-        } else {
-            [self showNotification:NSLocalizedString(@"Delete Fail", nil) activity:NO delay:2];
-            [self showLoginForm:nil];
+        } else {            
+            [self showAlertView:[HTTPStatus getStringByStat:stat]];
+            if (stat == 3) {
+                [self showLoginForm:nil];
+            }
         }
     }
     UITableView *tableView = [self getCurrentTableView];
@@ -361,13 +381,10 @@
 - (void)getUserDiaryCallback:(NSDictionary *)diaryInfo  code:(NSInteger)code
 {
     //[self showProgress:NSLocalizedString(@"Merge Diary...", nil)];
-    NSLog(@"after callback  %@", self.progressView.labelText);
     NSDictionary *data = [diaryInfo valueForKey:@"data"];
     _userStartDate = [data valueForKeyPath:@"startDateFormat"] == nil ? [self getCurrentDate] : [self strToDateByFormat:[data valueForKeyPath:@"startDateFormat"] format:@"yyyy-MM-dd"];
-    NSLog(@"getUserDiaryCallback!!! start date class regdate - %@, start - %@", _userRegDate, [data valueForKeyPath:@"startDate"]);
-
-    NSLog(@"getDiaryCallback %@", _userStartDate);
-    if ([[NSString stringWithFormat:@"%@", [diaryInfo valueForKeyPath:@"stat"]] isEqual:@"1"]) {
+    NSInteger stat = diaryInfo != nil && [diaryInfo objectForKey:@"stat"] != [NSNull null] ? [[diaryInfo objectForKey:@"stat"] integerValue] : 0;
+    if (stat == 1) {
         [self setUserInfoToCoreData:_username info:[NSString stringWithFormat:@"%@;%@;%@;%@",
                                                     [self dateToStrByFormat:_userRegDate format:@"yyyy-MM-dd HH:mm:ss"],
                                                     [self dateToStrByFormat:_userStartDate format:@"yyyy-MM-dd HH:mm:ss"],
@@ -378,11 +395,12 @@
     } else {
         if (code == 0) {
             [self showAlertView:NSLocalizedString(@"Network Failed", nil)];
-            NSLog(@"init slider from core data");
             [self initSlider];
         } else {
-            [self showAlertView:NSLocalizedString(@"Error When Getting Diaries", nil)];
-            [self showLoginForm:nil];
+            [self showAlertView:[HTTPStatus getStringByStat:stat]];
+            if (stat == 3) {
+                [self showLoginForm:nil];
+            }
         }
     }
 }
@@ -390,7 +408,23 @@
 /* 初始化3个TABLE VIEW */
 - (void)initSlider
 {
-    NSLog(@"initSlider");
+    if (self.tableView1) {
+        [self.tableView1 removeFromSuperview];
+        self.tableView1 = nil;
+    }
+    if (self.tableView2) {
+        [self.tableView2 removeFromSuperview];
+        self.tableView1 = nil;
+    }
+    if (self.tableView3) {
+        [self.tableView3 removeFromSuperview];
+        self.tableView1 = nil;
+    }
+    if (self.scrollView) {
+        [self.scrollView removeFromSuperview];
+        self.scrollView = nil;
+    }
+
     if (self.scrollView == nil) {
         self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 100, [self.view bounds].size.width, [self.view bounds].size.height - 100)];
         [self.scrollView setPagingEnabled:YES];
@@ -431,21 +465,23 @@
             }
             [self.scrollView addSubview:tableContainer];
         }
-        /*[self.tableView1 registerClass:[DiaryViewCell class] forCellReuseIdentifier:@"DiaryViewCell"];
-        [self.tableView2 registerClass:[DiaryViewCell class] forCellReuseIdentifier:@"DiaryViewCell"];
-        [self.tableView3 registerClass:[DiaryViewCell class] forCellReuseIdentifier:@"DiaryViewCell"];*/
+        //NSLog(@"reload after login %d, %d, %d", self.tableView1.tag, self.tableView2.tag, self.tableView3.tag);
+        [self.tableView1 reloadData];
+        [self.tableView2 reloadData];
+        [self.tableView3 reloadData];
     }
     [self initDefaultPage];
 }
 /* 初始化当前页为最后一页 */
 - (void)initDefaultPage
 {
-    [self showNotification:_username activity:NO delay:2];
+    //NSLog(@"initDefaultPage %@", _username);
+    //[self showNotification:_username activity:NO delay:2];
+    _currentSectionDate = [self getCurrentDate];
     _currentSectionIndex = [self getMonthCount:_userStartDate] - 1;
     _prePageIndex = 2;
     [self changeToPage:2 animated:NO];
     [self updateMonthText:_currentSectionDate];
-   // [self.notificationView hide:YES];
 }
 
 - (void)scrollToBottom:(UITableView *)tableView animate:(BOOL)ifAnimate
@@ -470,7 +506,6 @@
 
 - (void)setRemindTimeCallback:(NSDictionary *)remindInfo code:(NSInteger)code
 {
-    NSLog(@"setRemindTimeCallback ");
     [self setUserInfoToCoreData:_username info:[NSString stringWithFormat:@"%@;%@;%@;%@",
                                                 [self dateToStrByFormat:_userRegDate format:@"yyyy-MM-dd HH:mm:ss"],
                                                 [self dateToStrByFormat:_userStartDate format:@"yyyy-MM-dd HH:mm:ss"],
@@ -597,14 +632,14 @@
 
 - (void)onPageChanged:(id)sender
 {
-    NSLog(@"onPageChange");
+    //NSLog(@"onPageChange");
 	pageControlUsed = YES;
 	[self slideToCurrentPage:YES];
 }
 
 - (void)slideToCurrentPage:(bool)animated
 {
-    NSLog(@"sliderToCurrentPage");
+    //NSLog(@"sliderToCurrentPage");
 	int page = self.sliderPageControl.currentPage;
 	
     CGRect frame = self.scrollView.frame;
@@ -618,25 +653,34 @@
 //    NSLog(@"changeToPage %d", page);
 	[self.sliderPageControl setCurrentPage:page animated:YES];
 	[self slideToCurrentPage:animated];
+    [[self getCurrentTableView] scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
     [[self getCurrentTableView] reloadData];
 }
 
 /* TABLE 代理 */
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 1;
+    //NSLog(@"numberOfSectionsInTableView %d", self.logged);
+    if (self.logged) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self getTableViewDayCount:tableView];
-    
+    if (!self.logged) {
+        return 0;
+    } else {
+        return [self getTableViewDayCount:tableView];
+    }
     //NSLog(@"numberOfSectionsInTableView month - %@, month day - %d, section - %d, table tag - %d", month, [self getMonthDays:monthDate], sectionIndex, tableView.tag);
 }
 - (NSInteger)getTableViewDayCount:(UITableView *)tableView
 {
     NSInteger sectionIndex = [self getSectionIndex:self.sliderPageControl.currentPage currentSection:_currentSectionIndex tableView:tableView];
     NSDate *monthDate = [self getSectionMonth:sectionIndex];
-    NSLog(@"numberOfRowsInSection monthDate %d, %@, %d", sectionIndex, monthDate, [self getMonthCount:_userStartDate]);
+    //NSLog(@"numberOfRowsInSection monthDate %d, %@, %d", sectionIndex, monthDate, [self getMonthCount:_userStartDate]);
     if (sectionIndex == [self getMonthCount:_userStartDate] - 1) {
         NSString *year = [self dateToStrByFormat:monthDate format:@"yyyy"];
         NSString *month = [self dateToStrByFormat:monthDate format:@"MM"];
@@ -655,16 +699,12 @@
     static NSString *CellIdentifier = @"DiaryViewCell";
     DiaryViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        NSLog(@"cell is nil");
+        //NSLog(@"cell is nil");
         cell = [[DiaryViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     //NSLog(@"in configure index %@", [cell class]);
     [self configureCell:cell atIndexPath:indexPath tableView:tableView];
     return cell;
-}
-/* 根据section, row获取cell */
-- (UITableViewCell *)getTableCellBySectionRow:(NSInteger)section row:(NSInteger)row
-{
 }
 - (void)configureCell:(DiaryViewCell *)cell atIndexPath:(NSIndexPath *)indexPath tableView:(UITableView *)tableView
 {
@@ -683,11 +723,12 @@
     UILabel *dayLabel = (UILabel *)[cell viewWithTag:1];
     UILabel *keywordLabel = (UILabel *)[cell viewWithTag:2];
     UIButton *noticeButton = (UIButton *)[cell viewWithTag:3];
+    [noticeButton setTitleColor:[UIColor colorWithRed:255.0f/255.0f green:170.0f/255.0f blue:170.0f/255.0f alpha:1.0f] forState:UIControlStateNormal];
     dayLabel.text = rowStr;
     cell.rowIndex = row;
     cell.sectionIndex = sectionIndex;
-
     if ([result count] > 0) {
+        //NSLog(@"configure cell %@ %@", [result objectAtIndex:0], rowDateStr);
         NSManagedObject *cellData = [result objectAtIndex:0];
         //NSLog(@"configure test %@", [cellData valueForKey:@"keyword"]);
 
@@ -706,7 +747,7 @@
             [noticeButton setTitle:@"" forState:UIControlStateNormal];
         }
     } else {
-
+        //NSLog(@"configure cell %@", rowDateStr);
         keywordLabel.text = @"";
         [noticeButton setTitle:@"" forState:UIControlStateNormal];
     }
@@ -716,11 +757,13 @@
 {
     DiaryViewCell *cell = (DiaryViewCell *)button.superview.superview;
     NSString *dateStr = [self getDateStrBySectionRow:cell.sectionIndex row:cell.rowIndex];
+    DateExtend *selectDate = [[DateExtend alloc] initWithCalendar:self.calendar dateStr:dateStr dateFormat:@"yyyy-MM-dd"];
+
     //NSLog(@"syncButtonTouch %d %d, %@", cell.sectionIndex, cell.rowIndex, dateStr);
 
     //NSArray *result = [self getDiaryExist:dateStr];
     //if ([result count] > 0) {
-    [self showEditFormForCell:dateStr keyword:cell.keywordLabel.text sectionIndex:cell.sectionIndex rowIndex:cell.rowIndex sync:YES];
+    [self showEditFormForCell:selectDate keyword:cell.keywordLabel.text sectionIndex:cell.sectionIndex rowIndex:cell.rowIndex sync:YES];
     //}
 }
 
@@ -756,7 +799,7 @@
     if (![self.fetchedResultsController performFetch:&error]) {
         // Replace this implementation with code to handle the error appropriately.
         // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        //NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
     }
     
@@ -795,7 +838,7 @@
     if (![self.fetchedResultsControllerUser performFetch:&error]) {
         // Replace this implementation with code to handle the error appropriately.
         // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        //NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
     }
     
@@ -806,7 +849,7 @@
 
 - (NSArray *)getUserInfoFromCoreData:(NSString *)username
 {
-    NSLog(@"getUserInfoFromCoreData start");
+    //NSLog(@"getUserInfoFromCoreData start");
     NSString *usernameReplace = [username stringByReplacingOccurrencesOfString:@"@" withString:@","];
     NSManagedObjectContext *context = [self.fetchedResultsControllerUser managedObjectContext];
     NSEntityDescription *entity = [[self.fetchedResultsControllerUser fetchRequest] entity];
@@ -837,7 +880,7 @@
 - (void)setUserInfoToCoreData:(NSString *)username info:(NSString *)info
 {
     NSString *usernameReplace = [username stringByReplacingOccurrencesOfString:@"@" withString:@","];
-    NSLog(@"setUserInfoToCoreData %@, %@", usernameReplace, info);
+    //NSLog(@"setUserInfoToCoreData %@, %@", usernameReplace, info);
     NSManagedObjectContext *context = [self.fetchedResultsControllerUser managedObjectContext];
     NSEntityDescription *entity = [[self.fetchedResultsControllerUser fetchRequest] entity];
     NSError *error;
@@ -863,7 +906,7 @@
     [newUser setValue:info forKey:@"info"];
     
     if (![context save:&error]) {
-        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+        //NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
         abort();
     }
 }
@@ -894,7 +937,7 @@
 /* 当数据变化完成时 */
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
-    NSLog(@"controllerDidChangeContent %@", [controller cacheName]);
+    //NSLog(@"controllerDidChangeContent %@", [controller cacheName]);
     if ([[controller cacheName] isEqualToString:@"DiaryUser"]) {
         return;
     }
@@ -935,7 +978,7 @@
 /* 检查本地所有更新状态为0的日记,与服务器取回的数据做对比,如果服务器上不存在某天的数据,则相应的删除本地数据 */
 - (void)importToCoreData:(NSArray *)dataFromService
 {
-    NSLog(@"importToCoreData %d", [dataFromService count]);
+    //NSLog(@"importToCoreData %d", [dataFromService count]);
     if (dataFromService == nil || [dataFromService count] == 0) {
         [self initSlider];
         return;
@@ -955,7 +998,7 @@
     NSMutableDictionary *serverMap = [NSMutableDictionary dictionaryWithCapacity:5];
     NSString *serverDate;
     //NSArray *existDiary;
-    NSLog(@"import to start");
+    //NSLog(@"import to start");
     NSInteger count = 0;
     for (int i = 0; i < [dataFromService count]; i++) {
         singleData = [dataFromService objectAtIndex:i];
@@ -963,7 +1006,6 @@
         [serverMap setValue:@"1" forKey:serverDate];
         //existDiary = [self getDiaryExist:serverDate];
         singleCoreData = [diaryMapLocal valueForKey:serverDate];
-        NSLog(@"exist diary %@", singleCoreData);
         if (!singleCoreData) {
             [self insertSingleDiary:[singleData valueForKeyPath:@"d"] keyword:[singleData valueForKeyPath:@"content"] updateTime:[self strToDateByFormat:[singleData valueForKeyPath:@"created"] format:@"yyyy-MM-dd HH:mm:ss"] context:context];
         } else {
@@ -980,12 +1022,11 @@
         }
         
     }
-    NSLog(@"import to end");
 
     for (int j = 0; j < [updatedDiaries count]; j++) {
         singleCoreData = [updatedDiaries objectAtIndex:j];
         if (![serverMap valueForKey:[singleCoreData valueForKey:@"dateStr"]]) {
-            NSLog(@"delete core data if not exist on server %@", [singleCoreData valueForKey:@"dateStr"]);
+            //NSLog(@"delete core data if not exist on server %@", [singleCoreData valueForKey:@"dateStr"]);
             [context deleteObject:singleCoreData];
             count++;
         }
@@ -996,15 +1037,15 @@
 
     NSError *error;
     if (![context save:&error]) {
-        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+        //NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
         NSArray* detailedErrors = [[error userInfo] objectForKey:NSDetailedErrorsKey];
         if(detailedErrors != nil && [detailedErrors count] > 0) {
             for(NSError* detailedError in detailedErrors) {
-                NSLog(@"  DetailedError: %@", [detailedError userInfo]);
+                //NSLog(@"  DetailedError: %@", [detailedError userInfo]);
             }
         }
         else {
-            NSLog(@"  %@", [error userInfo]);
+            //NSLog(@"  %@", [error userInfo]);
         }        
         abort();
     }
@@ -1077,27 +1118,12 @@
 /* 合并日记时使用 */
 - (void)insertSingleDiary:(NSString *)dateStr keyword:(NSString *)keyword updateTime:(NSDate *)updateTime context:(NSManagedObjectContext *)context
 {    
-    /*NSArray *result = [self getDiaryExist:dateStr];
-    if ([result count] > 0) {
-        NSManagedObject *diary = [result objectAtIndex:0];
-        //NSLog(@"upsert origin %@", [diary valueForKey:@"keyword"]);
-        if(![[diary valueForKey:@"keyword"] isEqualToString:keyword]) {
-            NSLog(@"in upsert ");
-            [diary setValue:@"0" forKey:@"update"];
-            [diary setValue:keyword forKey:@"keyword"];
-            [diary setValue:updateTime forKey:@"date"];
-        } else {
-            [diary setValue:@"0" forKey:@"update"];
-        }
-    } else {*/
-        NSEntityDescription *entity = [[self.fetchedResultsController fetchRequest] entity];
-        NSManagedObject *detail = [NSEntityDescription insertNewObjectForEntityForName:[entity name] inManagedObjectContext:context];
-        [detail setValue:@"0" forKey:@"update"];
-        [detail setValue:keyword forKey:@"keyword"];
-        [detail setValue:dateStr forKey:@"dateStr"];
-        [detail setValue:updateTime forKey:@"date"];
-  //  }
-  //  NSLog(@"insertSingleDiary %@, %@, count - %d", dateStr, keyword, [result count]);
+    NSEntityDescription *entity = [[self.fetchedResultsController fetchRequest] entity];
+    NSManagedObject *detail = [NSEntityDescription insertNewObjectForEntityForName:[entity name] inManagedObjectContext:context];
+    [detail setValue:@"0" forKey:@"update"];
+    [detail setValue:keyword forKey:@"keyword"];
+    [detail setValue:dateStr forKey:@"dateStr"];
+    [detail setValue:updateTime forKey:@"date"];
 }
 
 /* 控制login form 显示 */
@@ -1114,20 +1140,44 @@
     [self.view bringSubviewToFront:self.loginContainer];
 }
 
+- (void) logout {
+    self.logged = NO;
+    [self setUserInfoToCoreData:_username info:[NSString stringWithFormat:@"%@;%@;%@;%@",
+                                                [self dateToStrByFormat:_userRegDate format:@"yyyy-MM-dd HH:mm:ss"],
+                                                [self dateToStrByFormat:_userStartDate format:@"yyyy-MM-dd HH:mm:ss"],
+                                                @"",
+                                                _remindTime]];
+    [self showNotification:@"hi" activity:NO delay:0];
+    _password = @"";
+    [self.userLogin setUserInfo:_username password:_password];
+    self.logged = NO;
+    if (self.tableView1) {
+        [self.tableView1 reloadData];
+    }
+    if (self.tableView2) {
+        [self.tableView2 reloadData];
+    }
+    if (self.tableView3) {
+        [self.tableView3 reloadData];
+    }
+    
+    [self showLoginForm:nil];
+}
+
 /* 控制 edit form 显示 */
 - (void) hideEditForm:(id)sender
 {
-    NSLog(@"DiaryViewController hideEditForm ");
     [self dismissPopupViewControllerWithanimationType:MJPopupViewAnimationFade];
 }
 /* 显示编辑界面 */
 - (void) showEditForm:(id)sender
 {
     //self.editContainer.hidden = NO;
-    [self presentPopupViewController:self.editForm animationType:MJPopupViewAnimationFade];
+    [self presentPopupViewController:self.editForm animationType:MJPopupViewAnimationSlideTopTop];
+    [self.editForm setFieldFocus];
 
 }
-- (void)showEditFormForCell:(NSString *)date keyword:(NSString *)keyword sectionIndex:(NSInteger)section rowIndex:(NSInteger)row sync:(BOOL)sync
+- (void)showEditFormForCell:(DateExtend *)date keyword:(NSString *)keyword sectionIndex:(NSInteger)section rowIndex:(NSInteger)row sync:(BOOL)sync
 {
     [self.editForm setFormInfo:date keyword:keyword sectionIndex:section rowIndex:row sync:sync];
     [self showEditForm:nil];
@@ -1138,14 +1188,13 @@
 
 /* 控制 setting view 显示 */
 - (IBAction)showSetting:(id)sender {
-    NSLog(@"show setting");
     [self.sidePanelController showRightPanelAnimated:YES];
 }
 /* 更新日记的状态 */
 - (BOOL)updateStatusInDiary:(NSString *)dateStr success:(NSString *)success
 {
     NSArray *result = [self getDiaryExist:dateStr];
-    NSLog(@"updateStatusInDiary date-%@ success-%@ result-%@", dateStr, success, [result objectAtIndex:0]);
+    //NSLog(@"updateStatusInDiary date-%@ success-%@ result-%d", dateStr, success, [result count]);
     NSManagedObjectContext *context = [self.fetchedResultsController managedObjectContext];// 为什么不用self.managedObjectContext
     if ([result count] > 0) {
         NSManagedObject *diary = [result objectAtIndex:0];
@@ -1160,7 +1209,7 @@
     }
     NSError *error;
     if (![context save:&error]) {
-        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+        //NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
         abort();
         return NO;
     }
@@ -1169,7 +1218,7 @@
 /* 更新日记关键词，可以设置update status 0success,1fail,2sending */
 - (BOOL)updateKeywordInDiary:(NSString *)dateStr keyword:(NSString *)keyword success:(NSString *)success
 {
-    NSLog(@"updateKeywordInDiary date-%@  keyword-%@ success-%@", dateStr, keyword, success);
+    //NSLog(@"updateKeywordInDiary date-%@  keyword-%@ success-%@", dateStr, keyword, success);
     NSArray *result = [self getDiaryExist:dateStr];
     NSManagedObjectContext *context = [self.fetchedResultsController managedObjectContext];// 为什么不用self.managedObjectContext
     if ([result count] > 0) {
@@ -1187,7 +1236,7 @@
     }
     NSError *error;
     if (![context save:&error]) {
-        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+        //NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
         abort();
         return NO;
     } else {
@@ -1197,10 +1246,10 @@
 /* 丢弃未同步的日记关键词，可以设置update status 0success,1fail,2sending */
 - (BOOL)dropKeywordInDiary:(NSString *)dateStr
 {
-    NSLog(@"dropKeywordInDiary date-%@", dateStr);
+    //NSLog(@"dropKeywordInDiary date-%@", dateStr);
     NSArray *result = [self getDiaryExist:dateStr];
     NSManagedObjectContext *context = [self.fetchedResultsController managedObjectContext];// 为什么不用self.managedObjectContext
-    NSLog(@"dropKeywordInDiary reslut : %@", result);
+    //NSLog(@"dropKeywordInDiary reslut : %@", result);
     if ([result count] > 0) {
         NSManagedObject *diary = [result objectAtIndex:0];
         [diary setValue:@"0" forKey:@"update"];
@@ -1209,7 +1258,7 @@
     }
     NSError *error;
     if (![context save:&error]) {
-        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+        //NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
         abort();
         return NO;
     } else {
@@ -1219,7 +1268,7 @@
 /* 更新日记的接口 */
 - (void) updateDiary:(NSString *)dateStr keyword:(NSString *)keyword sectionIndex:(NSInteger)section rowIndex:(NSInteger)row
 {
-    NSLog(@"diary view controller update diary %@ section - %d row - %d", keyword, section, row);
+    //NSLog(@"diary view controller update diary %@ section - %d row - %d", keyword, section, row);
 
     [self hideEditForm:nil];
     [self showProgress:NSLocalizedString(@"Upload Diary...", nil)];
@@ -1230,31 +1279,31 @@
     NSArray *dateArr = [dateStr componentsSeparatedByString:@" - "];
     BOOL saveToCore = [self updateKeywordInDiary:[dateArr componentsJoinedByString:@"-"] keyword:keyword success:@"2"];
     if (saveToCore) {
-        NSLog(@"updateDiary saveToCore success");
+        //NSLog(@"updateDiary saveToCore success");
         UITableView *tableView = [self getCurrentTableView];
         [self configureCell:(DiaryViewCell *)[tableView cellForRowAtIndexPath:_currentSelectCell] atIndexPath:_currentSelectCell tableView:tableView];
     } else {
-        NSLog(@"updateDiary saveToCore fail");
+        //NSLog(@"updateDiary saveToCore fail");
         [self showAlertView:NSLocalizedString(@"Save Data Error", nil)];
     }
 }
 /* 删除日记 */
 - (void) deleteDiary:(NSString *)dateStr sectionIndex:(NSInteger)section rowIndex:(NSInteger)row
 {
-    NSLog(@"Diary view controller deleteDiary");
+    //NSLog(@"Diary view controller deleteDiary %@", dateStr);
     [self hideEditForm:nil];
     [self showProgress:NSLocalizedString(@"Deleting Diary...", nil)];
     DiaryRequest *request = [[DiaryRequest alloc] init];
     request.delegate = self;
     [request deleteDiary:_username password:_password dateStr:dateStr sectionIndex:section rowIndex:row];
-    NSArray *dateArr = [dateStr componentsSeparatedByString:@" - "];
-    BOOL saveToCore = [self updateKeywordInDiary:[dateArr componentsJoinedByString:@"-"] keyword:@"" success:@"2"];
+    //NSArray *dateArr = [dateStr componentsSeparatedByString:@" - "];
+    BOOL saveToCore = [self updateKeywordInDiary:dateStr keyword:@"" success:@"2"];
     if (saveToCore) {
-        NSLog(@"deleteDiary saveToCore success");
+        //NSLog(@"deleteDiary saveToCore success");
         UITableView *tableView = [self getCurrentTableView];
         [self configureCell:(DiaryViewCell *)[tableView cellForRowAtIndexPath:_currentSelectCell] atIndexPath:_currentSelectCell tableView:tableView];
     } else {
-        NSLog(@"deleteDiary saveToCore fail");
+        //NSLog(@"deleteDiary saveToCore fail");
         [self showAlertView:NSLocalizedString(@"Save Data Error", nil)];
     }
 }
@@ -1264,11 +1313,9 @@
     [self showProgress:NSLocalizedString(@"Droping Diary...", nil)];
     BOOL saveToCore = [self dropKeywordInDiary:dateStr];
     if (saveToCore) {
-        NSLog(@"dropDiary saveToCore success");
         UITableView *tableView = [self getCurrentTableView];
         [self configureCell:(DiaryViewCell *)[tableView cellForRowAtIndexPath:_currentSelectCell] atIndexPath:_currentSelectCell tableView:tableView];
     } else {
-        NSLog(@"updateDiary saveToCore fail");
         [self showAlertView:NSLocalizedString(@"Save Data Error", nil)];
     }
 }
@@ -1363,23 +1410,22 @@
 - (NSIndexPath *)tableView:(UITableView *)tableView willDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     _currentSelectCell = nil;
-    NSLog(@"willDeselectRowAtIndexPath %d", [indexPath row]);
+    //NSLog(@"willDeselectRowAtIndexPath %d", [indexPath row]);
     return indexPath;
 }
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"didDeselectRowAtIndexPath %d", [indexPath row]);
+    //NSLog(@"didDeselectRowAtIndexPath %d", [indexPath row]);
 }
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     _currentSelectCell = indexPath;
+    DateExtend *selectDate = [[DateExtend alloc] initWithCalendar:self.calendar dateStr:[self getDateStrBySectionRow:_currentSectionIndex row:[indexPath row]] dateFormat:@"yyyy-MM-dd"];
     //NSLog(@"didSelectRowAtIndexPath=============== %d", [indexPath row]);
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    UILabel *dayLabel = (UILabel *)[cell viewWithTag:1];
     UILabel *keywordLabel = (UILabel *)[cell viewWithTag:2];
-    NSString *date = [NSString stringWithFormat:@"%@ - %@", self.monthLabel.text, dayLabel.text];
     NSInteger sectionIndex = [self getSectionIndex:self.sliderPageControl.currentPage currentSection:_currentSectionIndex tableView:tableView];
-    [self showEditFormForCell:date keyword:keywordLabel.text sectionIndex:sectionIndex rowIndex:[indexPath row] sync:NO];
+    [self showEditFormForCell:selectDate keyword:keywordLabel.text sectionIndex:sectionIndex rowIndex:[indexPath row] sync:NO];
 }
 
 -(void) tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
@@ -1394,5 +1440,27 @@
 {
     [self.loginForm setLoginForm:username password:password];
 }
+
+- (void) editFormMoveToTop {
+    CGRect screenBounds = [[UIScreen mainScreen] bounds];
+    if (screenBounds.size.height == 480.0f) {
+        [self popupMoveToY:-115];
+    } else {
+        [self popupMoveToY:-110];
+    }
+}
+
+- (void) editFormMoveToCenter {
+    [self popupMoveToCenter];
+}
+
+- (UIView *)getSelfView {
+    return self.view;
+}
+
+- (void)refreshTable {
+    
+}
+
 
 @end

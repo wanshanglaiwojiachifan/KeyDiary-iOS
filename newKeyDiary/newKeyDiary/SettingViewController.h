@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 #import "LoginViewController.h"
 #import "RemindViewController.h"
+#import "SliderPageControl.h"
+
 
 @class JASidePanelController;
 

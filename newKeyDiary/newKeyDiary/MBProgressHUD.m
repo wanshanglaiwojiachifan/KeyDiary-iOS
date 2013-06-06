@@ -655,17 +655,10 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	}
 }
 
-- (void)updateLabelText:(NSString *)text
-{
-    self.labelText = text;
-    [self updateUIForKeypath:@"labelText"];
-}
-
 - (void)updateUIForKeypath:(NSString *)keyPath {
 	if ([keyPath isEqualToString:@"mode"] || [keyPath isEqualToString:@"customView"]) {
 		[self updateIndicators];
 	} else if ([keyPath isEqualToString:@"labelText"]) {
-        NSLog(@"updateUIForKeypath %@", self.labelText);
 		label.text = self.labelText;
 	} else if ([keyPath isEqualToString:@"labelFont"]) {
 		label.font = self.labelFont;
